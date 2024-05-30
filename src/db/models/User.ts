@@ -5,6 +5,7 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
+  HasManyGetAssociationsMixin
 } from 'sequelize';
 
 import sequelize from '../postgreConnection';
@@ -23,6 +24,7 @@ export class User extends Model<
   public declare createdAt: CreationOptional<Date>;
   public declare updatedAt: CreationOptional<Date>;
   public declare setRoles: BelongsToManySetAssociationsMixin<Role, number>;
+  public declare getRoles: HasManyGetAssociationsMixin<Role>;
 }
 
 User.init(

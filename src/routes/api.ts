@@ -5,7 +5,6 @@ import Paths from '../constants/Paths';
 import User from '@src/models/User';
 import UserRoutes from './UserRoutes';
 import KarmaRoutes from '@src/routes/KarmaRoutes';
-import TaskRoutes from '@src/routes/TaskRoutes';
 import { checkDuplicateUsernameOrEmail, checkRolesExisted } from '@src/middleware/verifySignUp';
 
 
@@ -68,28 +67,16 @@ karmaRouter.post(
   KarmaRoutes.registerUser,
 );
 
+karmaRouter.post(
+  Paths.Karma.Login,
+  KarmaRoutes.loginUser
+)
+
 // Add UserRouter
 apiRouter.use(Paths.Users.Base, userRouter);
 
 /// Add KarmaRouter
 apiRouter.use(Paths.Karma.Base, karmaRouter);
-
-const tasksRouter = Router();
-tasksRouter.post(
-    Paths.Task.Create,
-    TaskRoutes.createSingleTask
-);
-tasksRouter.get(
-    Paths.Task.GetAll,
-    TaskRoutes.getAllTasks
-);
-tasksRouter.get(
-    Paths.Task.Hello,
-    TaskRoutes.answerHelloTasks
-);
-
-/// Add TaskRouter
-apiRouter.use(Paths.Task.Base, tasksRouter);
 
 
 // **** Export default **** //

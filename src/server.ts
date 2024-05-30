@@ -131,7 +131,6 @@ function populateInitialMaintenanceData() {
   }).then((user) => user.setRoles([3]));
 
   User.create({
-    ///id: 3,
     fullName: 'Daria Titova',
     email: 'dariatitova1192@gmail.com',
     gender: 'female',

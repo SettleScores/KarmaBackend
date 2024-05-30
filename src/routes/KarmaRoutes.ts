@@ -4,6 +4,8 @@ import { IReq, IRes } from './types/express/misc';
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import { createUser } from '@src/controllers/authController';
 import { SignUpRequest } from '@src/middleware/verifySignUp';
+import { LogInRequest } from '@src/middleware/verifyLogIn';
+import { logInUser } from '@src/controllers/authController';
 
 function answerHelloKarma(_: IReq, response: IRes) {
   return response.status(HttpStatusCodes.OK).json({ message: 'Hello Karma' });
@@ -23,9 +25,14 @@ function registerUser(request: IReq<SignUpRequest>, response: IRes) {
   return createUser(request, response);
 }
 
+function loginUser(request: IReq<LogInRequest>, response: IRes) {
+  return logInUser(request, response);
+} 
+
 export default {
   answerHelloKarma,
   getAllRoles,
   getAllUsers,
   registerUser,
+  loginUser
 } as const;

@@ -17,11 +17,6 @@ export default {
     Roles: '/roles',
     Users: '/users',
     Register: '/register',
-  },
-  Task: {
-    Base: '/tasks',
-    Create: '/create',
-    GetAll: '/get_all',
-    Hello: '/hello',
+    Login: '/login',
   },
 } as const;
