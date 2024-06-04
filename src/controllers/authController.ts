@@ -44,7 +44,7 @@ export const logInUser = (request: IReq<LogInRequest>, response: IRes) => {
         return response.status(404).send({ message: "User Not found." });
       }
 
-      var passwordIsValid = bcrypt.compareSync(
+      const passwordIsValid = bcrypt.compareSync(
         request.body.password,
         user.password
       );
@@ -64,12 +64,9 @@ export const logInUser = (request: IReq<LogInRequest>, response: IRes) => {
         expiresIn: 86400, // 24 hours
       });
 
-      let authorities = new Array<string>();
-
       user.getRoles().then((roles) => {
-        for (let i = 0; i < roles.length; i++) {
-          authorities.push("ROLE_" + roles[i].name.toUpperCase());
-        }
+        const authorities=roles.map(r =>`ROLE_${r.name.toUpperCase()}`)
+
         response.status(200).send({
           id: user.id,
           username: user.username,
