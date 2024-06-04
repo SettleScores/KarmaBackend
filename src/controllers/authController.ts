@@ -20,11 +20,17 @@ export const createUser = (request: IReq<SignUpRequest>, response: IRes) => {
     password: generatedPassword,
   })
     .then(user => {
-        user.setRoles([1]).then(() => {
-          response.send({ message: 'User was registered successfully!' });
+        const token = jwt.sign({ id: user.id }, EnvVars.Jwt.Secret, {
+          algorithm: "HS256",
+          allowInsecureKeySizes: true,
+          expiresIn: 86400, // 24 hours
         });
 
-        /// The fun ends here
+        user.setRoles([1]).then(() => {
+          response.send({ message: 'User was registered and logged in successfully!',
+                          accessToken: token,
+           });
+        });
       }
   )
     .catch((err: Error) => {
@@ -57,10 +63,8 @@ export const logInUser = (request: IReq<LogInRequest>, response: IRes) => {
           message: "Invalid Password!",
         });
       }
-
-      const jwtSecretKey = EnvVars.Jwt.Secret;
-
-      const token = jwt.sign({ id: user.id }, jwtSecretKey, {
+  
+      const token = jwt.sign({ id: user.id }, EnvVars.Jwt.Secret, {
         algorithm: "HS256",
         allowInsecureKeySizes: true,
         expiresIn: 86400, // 24 hours
