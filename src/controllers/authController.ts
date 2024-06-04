@@ -23,6 +23,8 @@ export const createUser = (request: IReq<SignUpRequest>, response: IRes) => {
         user.setRoles([1]).then(() => {
           response.send({ message: 'User was registered successfully!' });
         });
+
+        /// The fun ends here
       }
   )
     .catch((err: Error) => {
