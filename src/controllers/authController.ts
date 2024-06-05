@@ -6,8 +6,7 @@ import { IReq } from '@src/routes/types/types';
 import { SignUpRequest } from '@src/middleware/verifySignUp';
 import { IRes } from '@src/routes/types/express/misc';
 import { LogInRequest } from '@src/middleware/verifyLogIn';
-import jwt from 'jsonwebtoken';
-import EnvVars from '@src/constants/EnvVars';
+import { generateTokenFromUserId } from '@src/util/generateToken';
 
 export const createUser = (request: IReq<SignUpRequest>, response: IRes) => {
   const generatedPassword = bcrypt.hashSync(request.body.password, 8);
@@ -20,15 +19,9 @@ export const createUser = (request: IReq<SignUpRequest>, response: IRes) => {
     password: generatedPassword,
   })
     .then(user => {
-        const token = jwt.sign({ id: user.id }, EnvVars.Jwt.Secret, {
-          algorithm: "HS256",
-          allowInsecureKeySizes: true,
-          expiresIn: 86400, // 24 hours
-        });
-
         user.setRoles([1]).then(() => {
           response.send({ message: 'User was registered and logged in successfully!',
-                          accessToken: token,
+                          accessToken: generateTokenFromUserId(user.id),
            });
         });
       }
@@ -63,22 +56,17 @@ export const logInUser = (request: IReq<LogInRequest>, response: IRes) => {
           message: "Invalid Password!",
         });
       }
-  
-      const token = jwt.sign({ id: user.id }, EnvVars.Jwt.Secret, {
-        algorithm: "HS256",
-        allowInsecureKeySizes: true,
-        expiresIn: 86400, // 24 hours
-      });
 
       user.getRoles().then((roles) => {
         const authorities=roles.map(r =>`ROLE_${r.name.toUpperCase()}`)
 
         response.status(200).send({
+          message: 'User was logged in successfully!',
           id: user.id,
           username: user.username,
           email: user.email,
           roles: authorities,
-          accessToken: token,
+          accessToken: generateTokenFromUserId(user.id),
         });
       });
     })
