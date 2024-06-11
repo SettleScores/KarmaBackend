@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import EnvVars from '@src/constants/EnvVars';
-import { JwtPayload } from 'jsonwebtoken';
 
 export const generateTokenFromUserId = (userId: number, expIn: number = 86400) =>
   jwt.sign({ id: userId }, EnvVars.Jwt.Secret, {
@@ -18,5 +17,5 @@ export const generateLogoutTokenFromToken = (accessToken: string) => {
     /// err TODO normal err
   }
 
-  generateTokenFromUserId(decoded.id, 0)
+  return generateTokenFromUserId(decoded.id, 0)
 };        
