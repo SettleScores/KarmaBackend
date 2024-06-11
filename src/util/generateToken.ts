@@ -2,11 +2,11 @@ import jwt from 'jsonwebtoken';
 import EnvVars from '@src/constants/EnvVars';
 import { JwtPayload } from 'jsonwebtoken';
 
-export const generateTokenFromUserId = (userId: number) =>
+export const generateTokenFromUserId = (userId: number, expIn: number = 86400) =>
   jwt.sign({ id: userId }, EnvVars.Jwt.Secret, {
     algorithm: "HS256",
     allowInsecureKeySizes: true,
-    expiresIn: 86400, // 24 hours
+    expiresIn: expIn, /// 24 hours or 0 hours [for Logout]
   });
 
 export const generateLogoutTokenFromToken = (accessToken: string) => {
@@ -18,10 +18,5 @@ export const generateLogoutTokenFromToken = (accessToken: string) => {
     /// err TODO normal err
   }
 
-  return jwt.sign({ id: decoded.id }, EnvVars.Jwt.Secret, {
-    algorithm: "HS256",
-    allowInsecureKeySizes: true,
-    expiresIn: 0, /// 0 hours
-  });
-};
-          
+  generateTokenFromUserId(decoded.id, 0)
+};        

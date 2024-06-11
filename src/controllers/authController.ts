@@ -80,6 +80,6 @@ export const logInUser = (request: IReq<LogInRequest>, response: IRes) => {
 export const logOutUser = (request: IReq<LogOutRequest>, response: IRes) => {
   response.status(200).send({
     message: 'User was logged out successfully!',
-    logoutAccessToken: generateLogoutTokenFromToken(request.body.accessToken)
+    accessToken: generateLogoutTokenFromToken(request.body.accessToken)
   }) 
 }
