@@ -6,6 +6,8 @@ import { createUser } from '@src/controllers/authController';
 import { SignUpRequest } from '@src/middleware/verifySignUp';
 import { LogInRequest } from '@src/middleware/verifyLogIn';
 import { logInUser } from '@src/controllers/authController';
+import { logOutUser } from '@src/controllers/authController';
+import { LogOutRequest } from '@src/middleware/verifyLogOut';
 
 function answerHelloKarma(_: IReq, response: IRes) {
   return response.status(HttpStatusCodes.OK).json({ message: 'Hello Karma' });
@@ -27,6 +29,10 @@ function registerUser(request: IReq<SignUpRequest>, response: IRes) {
 
 function loginUser(request: IReq<LogInRequest>, response: IRes) {
   return logInUser(request, response);
+}
+
+function logoutUser(request: IReq<LogOutRequest>, response: IRes) {
+  return logOutUser(request, response);
 } 
 
 export default {
@@ -34,5 +40,6 @@ export default {
   getAllRoles,
   getAllUsers,
   registerUser,
-  loginUser
+  loginUser,
+  logoutUser
 } as const;

@@ -7,6 +7,8 @@ import { SignUpRequest } from '@src/middleware/verifySignUp';
 import { IRes } from '@src/routes/types/express/misc';
 import { LogInRequest } from '@src/middleware/verifyLogIn';
 import { generateTokenFromUserId } from '@src/util/generateToken';
+import { LogOutRequest } from '@src/middleware/verifyLogOut';
+import { generateLogoutTokenFromToken } from '@src/util/generateToken';
 
 export const createUser = (request: IReq<SignUpRequest>, response: IRes) => {
   const generatedPassword = bcrypt.hashSync(request.body.password, 8);
@@ -74,3 +76,10 @@ export const logInUser = (request: IReq<LogInRequest>, response: IRes) => {
       response.status(500).send({ message: err.message });
     });
 };
+
+export const logOutUser = (request: IReq<LogOutRequest>, response: IRes) => {
+  response.status(200).send({
+    message: 'User was logged out successfully!',
+    accessToken: generateLogoutTokenFromToken(request.body.accessToken)
+  }) 
+}
