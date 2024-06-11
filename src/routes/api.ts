@@ -72,6 +72,11 @@ karmaRouter.post(
   KarmaRoutes.loginUser
 )
 
+karmaRouter.post(
+  Paths.Karma.Logout,
+  KarmaRoutes.logoutUser
+)
+
 // Add UserRouter
 apiRouter.use(Paths.Users.Base, userRouter);
 
