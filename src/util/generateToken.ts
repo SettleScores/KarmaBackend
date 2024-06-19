@@ -14,7 +14,7 @@ export const generateLogoutTokenFromToken = (accessToken: string) => {
   try {
     decoded = jwt.verify(accessToken, EnvVars.Jwt.Secret);
   } catch(err) {
-    /// err TODO normal err
+    /// TODO normal err
   }
 
   return generateTokenFromUserId(decoded.id, 0)
