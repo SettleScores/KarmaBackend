@@ -19,5 +19,6 @@ export default {
     Register: '/register',
     Login: '/login',
     Logout: '/logout',
+    Tasks: '/tasks',
   },
 } as const;

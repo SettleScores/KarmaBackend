@@ -22,6 +22,7 @@ import { RouteError } from '@src/other/classes';
 import sequelize from './db/postgreConnection';
 import { Role } from './db/models/Role';
 import { User } from './db/models/User';
+import { Task } from './db/models/Task';
 import './db/associations';
 
 // **** Variables **** //
@@ -92,11 +93,14 @@ app.get('/users', (_: Request, res: Response) => {
 //TODO figure out initial data population or migration betweeen production and development
 sequelize.sync({ force: true }).then(() => {
   console.log('Recreaing database from scratch');
-  populateInitialData();
+  populateInitialRolesData();
+
   populateInitialMaintenanceData();
+
+  populateInitialTasksData();
 });
 
-function populateInitialData() {
+function populateInitialRolesData() {
   Role.create({
     id: 1,
     name: 'user',
@@ -153,6 +157,56 @@ function populateInitialMaintenanceData() {
     username: 'User',
     password: '555',
   }).then((user) => user.setRoles([1]));
+}
+
+function populateInitialTasksData() {
+  Task.create({
+    description: 'Go to the contact list and text \"How are you?\" someone you didn\'t talk for a while',
+  });
+
+  Task.create({
+    description: 'Contact your cousins or far away relatives you didn\'t talk to forever',
+  });
+
+  Task.create({
+    description: 'Come over to any homeless person and ask if they need any help. Try to help them',
+  });
+
+  Task.create({
+    description: 'Collect plastic bottles for 1 week and try to recycle them',
+  });
+
+  Task.create({
+    description: 'Try to go vegan for 1 day',
+  });
+
+  Task.create({
+    description: 'Take care about your health. Make appointment and visit a dentist for a checkup',
+  });
+
+  Task.create({
+    description: 'Fix something in the house, that need a fix',
+  });
+
+  Task.create({
+    description: 'Clean inside your car',
+  });
+
+  Task.create({
+    description: 'To the laundry of the things that are not get washed frequently: blankets, pillow cases, etc',
+  });
+
+  Task.create({
+    description: 'Visit a concert',
+  });
+
+  Task.create({
+    description: 'Buy natural flowers to decorate your house',
+  });
+
+  Task.create({
+    description: 'Go to the gym and do a good workout',
+  });
 }
 
 // **** Export default **** //

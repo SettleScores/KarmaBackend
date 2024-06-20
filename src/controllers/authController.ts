@@ -1,7 +1,6 @@
 import { User } from '@src/db/models/User';
 import bcrypt from 'bcrypt';
 import { Op } from 'sequelize';
-import { Role } from '@src/db/models/Role';
 import { IReq } from '@src/routes/types/types';
 import { SignUpRequest } from '@src/middleware/verifySignUp';
 import { IRes } from '@src/routes/types/express/misc';
