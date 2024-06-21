@@ -46,6 +46,9 @@ export const logInUser = (request: IReq<LogInRequest>, response: IRes) => {
         return response.status(404).send({ message: "User Not found." });
       }
 
+      if (user.password == null)
+        return 
+
       const passwordIsValid = bcrypt.compareSync(
         request.body.password,
         user.password

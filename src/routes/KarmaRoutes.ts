@@ -9,6 +9,7 @@ import { logInUser } from '@src/controllers/authController';
 import { logOutUser } from '@src/controllers/authController';
 import { LogOutRequest } from '@src/middleware/verifyLogOut';
 import { getAllTasks } from '@src/controllers/tasksController';
+import { IAuthReq } from './types/types';
 
 function answerHelloKarma(_: IReq, response: IRes) {
   return response.status(HttpStatusCodes.OK).json({ message: 'Hello Karma' });
@@ -36,7 +37,7 @@ function logoutUser(request: IReq<LogOutRequest>, response: IRes) {
   return logOutUser(request, response);
 } 
 
-function getTasks(request: IReq, response: IRes) {
+function getTasks(request: IAuthReq, response: IRes) {
   console.log('qqq_KarmaRoutes_getTasks')
 
   return getAllTasks(request, response);

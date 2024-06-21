@@ -82,7 +82,7 @@ karmaRouter.post(
 karmaRouter.get(
   Paths.Karma.Tasks,
   authenticate,
-  KarmaRoutes.getTasks
+  KarmaRoutes.getTasks as any
 )
 
 // Add UserRouter
