@@ -37,10 +37,10 @@ function logoutUser(request: IReq<LogOutRequest>, response: IRes) {
   return logOutUser(request, response);
 } 
 
-function getTasks(request: IAuthReq, response: IRes) {
+function getTasks(request: IReq, response: IRes) {
   console.log('qqq_KarmaRoutes_getTasks')
 
-  return getAllTasks(request, response);
+  return getAllTasks(request as IAuthReq, response);
 } 
 
 export default {
