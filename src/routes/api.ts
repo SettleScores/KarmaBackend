@@ -7,6 +7,8 @@ import UserRoutes from './UserRoutes';
 import KarmaRoutes from '@src/routes/KarmaRoutes';
 import { checkDuplicateUsernameOrEmail, checkRolesExisted } from '@src/middleware/verifySignUp';
 
+import { authenticate } from '@src/middleware/authenticateToken';
+
 
 // **** Variables **** //
 
@@ -75,6 +77,12 @@ karmaRouter.post(
 karmaRouter.post(
   Paths.Karma.Logout,
   KarmaRoutes.logoutUser
+)
+
+karmaRouter.get(
+  Paths.Karma.Tasks,
+  authenticate,
+  KarmaRoutes.getTasks
 )
 
 // Add UserRouter

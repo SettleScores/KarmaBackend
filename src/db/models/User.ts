@@ -20,7 +20,7 @@ export class User extends Model<
   public declare email: string;
   public declare gender: string;
   public declare username: string;
-  public declare password: string;
+  public declare password?: string;
   public declare createdAt: CreationOptional<Date>;
   public declare updatedAt: CreationOptional<Date>;
   public declare setRoles: BelongsToManySetAssociationsMixin<Role, number>;

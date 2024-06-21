@@ -1,7 +1,6 @@
 import { User } from '@src/db/models/User';
 import bcrypt from 'bcrypt';
 import { Op } from 'sequelize';
-import { Role } from '@src/db/models/Role';
 import { IReq } from '@src/routes/types/types';
 import { SignUpRequest } from '@src/middleware/verifySignUp';
 import { IRes } from '@src/routes/types/express/misc';
@@ -46,6 +45,9 @@ export const logInUser = (request: IReq<LogInRequest>, response: IRes) => {
       if (!user) {
         return response.status(404).send({ message: "User Not found." });
       }
+
+      if (user.password == null)
+        return 
 
       const passwordIsValid = bcrypt.compareSync(
         request.body.password,
