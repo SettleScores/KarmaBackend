@@ -10,3 +10,12 @@ export const getAllTasks = async (request: IAuthReq, response: IRes) => { /// з
     tasks: tasksBunch,
   });
 };
+
+export const uploadTheFile = (request: IAuthReq, response: IRes) => {
+  try {
+    response.status(200).json({ success: "file upload successful" });
+  } catch (error) {
+    response.status(500).json({ error: error });
+  }
+};
+
