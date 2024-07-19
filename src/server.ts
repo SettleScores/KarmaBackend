@@ -137,7 +137,7 @@ function populateInitialMaintenanceData() {
 
   User.create({
     fullName: 'Daria Titova',
-    email: 'dariatitova1192@gmail.com',
+    email: 'daria@gmail.com', /// Removed Daria's real email to avoid clashes duting registration)
     gender: 'female',
     username: 'Damato',
     password: '333',
