@@ -8,7 +8,9 @@ import KarmaRoutes from '@src/routes/KarmaRoutes';
 import { checkDuplicateUsernameOrEmail, checkRolesExisted } from '@src/middleware/verifySignUp';
 
 import { authenticate } from '@src/middleware/authenticateToken';
+import { prepareLoader } from '@src/middleware/prepareFileUploader';
 
+/// import multer from 'multer';
 
 // **** Variables **** //
 
@@ -50,7 +52,7 @@ userRouter.delete(
 const karmaRouter = Router();
 karmaRouter.get(
     Paths.Karma.Hello,
-    KarmaRoutes.answerHelloKarma
+    KarmaRoutes.answerHelloKarma,
 );
 
 karmaRouter.get(
@@ -71,22 +73,28 @@ karmaRouter.post(
 
 karmaRouter.post(
   Paths.Karma.Login,
-  KarmaRoutes.loginUser
+  KarmaRoutes.loginUser,
 )
 
 karmaRouter.post(
   Paths.Karma.Logout,
-  KarmaRoutes.logoutUser
+  KarmaRoutes.logoutUser,
 )
 
 karmaRouter.get(
   Paths.Karma.Tasks,
   authenticate,
-  KarmaRoutes.getTasks
+  KarmaRoutes.getTasks,
 )
 
-// Add UserRouter
-apiRouter.use(Paths.Users.Base, userRouter);
+ karmaRouter.post(
+   Paths.Karma.UploadFile,
+   [ authenticate, prepareLoader() ],
+   KarmaRoutes.uploadFile
+ );
+
+ // Add UserRouter
+ apiRouter.use(Paths.Users.Base, userRouter);
 
 /// Add KarmaRouter
 apiRouter.use(Paths.Karma.Base, karmaRouter);

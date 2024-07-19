@@ -10,6 +10,7 @@ import { logOutUser } from '@src/controllers/authController';
 import { LogOutRequest } from '@src/middleware/verifyLogOut';
 import { getAllTasks } from '@src/controllers/tasksController';
 import { IAuthReq } from './types/types';
+import { uploadTheFile } from '@src/controllers/tasksController';
 
 function answerHelloKarma(_: IReq, response: IRes) {
   return response.status(HttpStatusCodes.OK).json({ message: 'Hello Karma' });
@@ -38,9 +39,13 @@ function logoutUser(request: IReq<LogOutRequest>, response: IRes) {
 } 
 
 function getTasks(request: IReq, response: IRes) {
-  console.log('qqq_KarmaRoutes_getTasks')
-
   return getAllTasks(request as IAuthReq, response);
+}
+
+function uploadFile(request: IReq, response: IRes) {
+  console.log('qqq_KarmaRoutes_uploadFile');
+
+  return uploadTheFile(request as IAuthReq, response);
 } 
 
 export default {
@@ -51,4 +56,5 @@ export default {
   loginUser,
   logoutUser,
   getTasks,
+  uploadFile,
 } as const;

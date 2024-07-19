@@ -25,6 +25,7 @@ import { User } from './db/models/User';
 import { Task } from './db/models/Task';
 import './db/associations';
 
+
 // **** Variables **** //
 
 const app = express();

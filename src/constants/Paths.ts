@@ -20,5 +20,6 @@ export default {
     Login: '/login',
     Logout: '/logout',
     Tasks: '/tasks',
+    UploadFile: '/uploadfile',
   },
 } as const;
