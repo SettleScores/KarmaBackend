@@ -24,23 +24,11 @@ import { Role } from './db/models/Role';
 import { User } from './db/models/User';
 import { Task } from './db/models/Task';
 import './db/associations';
-// import multer from 'multer';
+
 
 // **** Variables **** //
-// const storage = multer.diskStorage({
-//   destination: function(request, file, cb) {
-//       cb(null, 'uploads/')
-//   },
-//   filename: function(request, file, cb) {
-//       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-//       cb(null, uniqueSuffix + file.originalname)
-//   }
-// })
-
-// const upload = multer({ storage: storage })
 
 const app = express();
-
 
 // **** Setup **** //
 
@@ -223,13 +211,5 @@ function populateInitialTasksData() {
 }
 
 // **** Export default **** //
-
-// app.post('/api/file-upload', upload.single('file'), (req, res) => { 
-//   try { 
-//       res.status(200).json({ success: "file upload successful" }) 
-//   } catch (error) { 
-//       res.status(500).json({ error: error }) 
-//   } 
-// }) 
 
 export default app;
