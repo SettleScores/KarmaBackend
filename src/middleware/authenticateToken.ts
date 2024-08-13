@@ -15,9 +15,9 @@ export const authenticate = (request: IReq, response: IRes, next: NextFunction) 
     return
   }
 
-  const token: any = request.headers.authorization
+  const token = request.headers.authorization || '' /// subtle nuance; if undefined replace with empty string''
   
-  let tokenAfterSplit = token.split(" ")[1];
+  const tokenAfterSplit = token.split(" ")[1];
 
   if (tokenAfterSplit === "") {
     response.status(401).json();

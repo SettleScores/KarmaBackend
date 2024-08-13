@@ -16,15 +16,16 @@ export const getAllTasks = async (request: IAuthReq, response: IRes) => { /// з
 
 export const uploadTheFile = (request: IAuthReq, response: IRes) => {
   try {
-    const token: any = request.headers.authorization
+    const token = request.headers.authorization || '' /// subtle nuance; if undefined replace with empty string''
   
-    let tokenAfterSplit = token.split(" ")[1];
+    const tokenAfterSplit = token.split(" ")[1];
 
-    const requestAny = request as any
+    const requestAny = request as any /// TODO it would be fino if it was possible to do without 'any'
 
     TaskStatus.create({
       userId: (jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any).id,
-      fileName: requestAny.params.filename,
+      ///fileName: requestAny.params.filename,
+      fileName: requestAny.body.filename,
       taskId: requestAny.body.taskId,
       status: 'Pending',
     });

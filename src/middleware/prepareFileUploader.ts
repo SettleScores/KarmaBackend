@@ -13,7 +13,7 @@ export const prepareLoader = () => {
 
              cb(null, randomUuid + dot + file.originalname.split(dot)[1])
 
-             request.params.filename = randomUuid
+             request.body.filename = randomUuid
          }
     })
 
