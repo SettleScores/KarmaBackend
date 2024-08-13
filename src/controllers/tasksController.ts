@@ -16,7 +16,7 @@ export const getAllTasks = async (request: IAuthReq, response: IRes) => { /// з
 
 export const uploadTheFile = (request: IAuthReq, response: IRes) => {
   try {
-    const token = request.headers.authorization || '' /// subtle nuance; if undefined replace with empty string''
+    const token = request.headers.authorization || '' /// subtle nuance; if undefined or null replace with empty string ''
   
     const tokenAfterSplit = token.split(" ")[1];
 
