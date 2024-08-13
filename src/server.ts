@@ -23,6 +23,7 @@ import sequelize from './db/postgreConnection';
 import { Role } from './db/models/Role';
 import { User } from './db/models/User';
 import { Task } from './db/models/Task';
+import { TaskStatus } from './db/models/TaskStatus';
 import './db/associations';
 
 
@@ -99,6 +100,8 @@ sequelize.sync({ force: true }).then(() => {
   populateInitialMaintenanceData();
 
   populateInitialTasksData();
+
+  populateInitialTasksStatusesData();
 });
 
 function populateInitialRolesData() {
@@ -207,6 +210,15 @@ function populateInitialTasksData() {
 
   Task.create({
     description: 'Go to the gym and do a good workout',
+  });
+}
+
+function populateInitialTasksStatusesData() {
+  TaskStatus.create({
+    userId: -1,
+    taskId: -1,
+    fileName: '_',
+    status: '_',
   });
 }
 
