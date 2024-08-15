@@ -24,7 +24,6 @@ export const uploadTheFile = (request: IAuthReq, response: IRes) => {
 
     TaskStatus.create({
       userId: (jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any).id,
-      ///fileName: requestAny.params.filename,
       fileName: requestAny.body.filename,
       taskId: requestAny.body.taskId,
       status: 'Pending',
