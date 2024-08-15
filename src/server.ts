@@ -23,6 +23,7 @@ import sequelize from './db/postgreConnection';
 import { Role } from './db/models/Role';
 import { User } from './db/models/User';
 import { Task } from './db/models/Task';
+import { TaskStatus } from './db/models/TaskStatus';
 import './db/associations';
 
 
@@ -99,6 +100,8 @@ sequelize.sync({ force: true }).then(() => {
   populateInitialMaintenanceData();
 
   populateInitialTasksData();
+
+  populateInitialTasksStatusesData();
 });
 
 function populateInitialRolesData() {
@@ -137,7 +140,7 @@ function populateInitialMaintenanceData() {
 
   User.create({
     fullName: 'Daria Titova',
-    email: 'dariatitova1192@gmail.com',
+    email: 'daria@gmail.com', /// Removed Daria's real email dariatitova1192@gmail.com to avoid clashes duting registration)
     gender: 'female',
     username: 'Damato',
     password: '333',
@@ -207,6 +210,15 @@ function populateInitialTasksData() {
 
   Task.create({
     description: 'Go to the gym and do a good workout',
+  });
+}
+
+function populateInitialTasksStatusesData() {
+  TaskStatus.create({
+    userId: -1,
+    taskId: -1,
+    fileName: '_',
+    status: '_',
   });
 }
 

@@ -43,8 +43,6 @@ function getTasks(request: IReq, response: IRes) {
 }
 
 function uploadFile(request: IReq, response: IRes) {
-  console.log('qqq_KarmaRoutes_uploadFile');
-
   return uploadTheFile(request as IAuthReq, response);
 } 
 
