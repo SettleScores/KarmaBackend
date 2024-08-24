@@ -93,6 +93,18 @@ karmaRouter.get(
    KarmaRoutes.uploadFile
  );
 
+ karmaRouter.post(
+  Paths.Karma.CreepInTask,
+  authenticate,
+  KarmaRoutes.creepInTask
+);
+
+karmaRouter.get(
+  Paths.Karma.User,
+  authenticate,
+  KarmaRoutes.getUserProfile,
+);
+
  // Add UserRouter
  apiRouter.use(Paths.Users.Base, userRouter);
 

@@ -1,6 +1,7 @@
 import {
     CreationOptional,
     DataTypes,
+    EnumDataType,
     InferAttributes,
     InferCreationAttributes,
     Model,
@@ -8,6 +9,12 @@ import {
 
   import sequelize from '../postgreConnection';
   
+  export enum TaskStatusType { /// TODO Use or RremoOve
+    Huj = 'Хуй',
+    Pizda = 'Пизда',
+    Ggurda = 'Джигурда',
+  }
+
   export class TaskStatus extends Model<
     InferAttributes<TaskStatus>,
     InferCreationAttributes<TaskStatus>
@@ -16,7 +23,7 @@ import {
     public declare userId: number;
     public declare taskId: number;
     public declare fileName: string;
-    public declare status: string;
+    public declare status: 'Unknown' | 'Working' | 'Pending' | 'Done';
   }
   
   TaskStatus.init(
@@ -38,8 +45,8 @@ import {
         type: new DataTypes.STRING(128),
         allowNull: false,
       },
-      status: { /// TODO Later use predicated values, analogical to Roles
-        type: new DataTypes.STRING(128),
+      status: {
+        type: new DataTypes.ENUM('Unknown', 'Working', 'Pending', 'Done'),
         allowNull: false,
       },
     },
