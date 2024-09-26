@@ -5,6 +5,7 @@ import { TaskStatus } from '@src/db/models/TaskStatus';
 import jwt from 'jsonwebtoken';
 import EnvVars from '@src/constants/EnvVars';
 import { Op } from 'sequelize';
+import { Sequelize } from 'sequelize';
 
 
 export interface CreepInTaskRequest { /// TODO Use that; and avoid 'any' in creepInTheTask
@@ -12,7 +13,23 @@ export interface CreepInTaskRequest { /// TODO Use that; and avoid 'any' in cree
 }
 
 export const getAllTasks = async (request: IAuthReq, response: IRes) => { /// заместо 
-  const tasksBunch = await Task.findAll();
+  const token = request.headers.authorization || ''
+
+  const tokenAfterSplit = token.split(' ')[1];
+
+  const userId = (jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any).id
+
+  const literal = `(SELECT DISTINCT \"taskId\" FROM tasks_statuses WHERE \"userId\" = ${userId})`
+
+  const tasksBunch = await Task.findAll({
+    where: {
+      id: {
+        [Op.notIn]: Sequelize.literal(
+          literal
+        )
+      }
+    }
+  });
 
   response.status(200).send({
     tasks: tasksBunch,
