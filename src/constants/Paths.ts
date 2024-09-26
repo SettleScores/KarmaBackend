@@ -21,5 +21,7 @@ export default {
     Logout: '/logout',
     Tasks: '/tasks',
     UploadFile: '/uploadfile',
+    CreepInTask: '/creepintask',
+    User: '/user',
   },
 } as const;

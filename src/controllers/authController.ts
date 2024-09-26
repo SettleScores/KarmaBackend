@@ -18,6 +18,7 @@ export const createUser = (request: IReq<SignUpRequest>, response: IRes) => {
     gender: request.body.gender,
     username: request.body.username,
     password: generatedPassword,
+    rankId: 1,
   })
     .then(user => {
         user.setRoles([1]).then(() => {
@@ -43,7 +44,7 @@ export const logInUser = (request: IReq<LogInRequest>, response: IRes) => {
   })
     .then((user) => {
       if (!user) {
-        return response.status(404).send({ message: "User Not found." });
+        return response.status(404).send({ message: 'User Not found.' });
       }
 
       if (user.password == null)
@@ -57,7 +58,7 @@ export const logInUser = (request: IReq<LogInRequest>, response: IRes) => {
       if (!passwordIsValid) {
         return response.status(401).send({
           accessToken: null,
-          message: "Invalid Password!",
+          message: 'Invalid Password!',
         });
       }
 

@@ -21,6 +21,7 @@ export class User extends Model<
   public declare gender: string;
   public declare username: string;
   public declare password?: string;
+  public declare rankId: number;
   public declare createdAt: CreationOptional<Date>;
   public declare updatedAt: CreationOptional<Date>;
   public declare setRoles: BelongsToManySetAssociationsMixin<Role, number>;
@@ -53,6 +54,9 @@ User.init(
     password: {
       type: new DataTypes.STRING(128),
       allowNull: false,
+    },
+    rankId: {
+      type: DataTypes.INTEGER,
     },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,

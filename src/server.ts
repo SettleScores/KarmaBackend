@@ -21,10 +21,17 @@ import { NodeEnvs } from '@src/constants/misc';
 import { RouteError } from '@src/other/classes';
 import sequelize from './db/postgreConnection';
 import { Role } from './db/models/Role';
+import { Rank } from './db/models/Rank';
 import { User } from './db/models/User';
 import { Task } from './db/models/Task';
 import { TaskStatus } from './db/models/TaskStatus';
 import './db/associations';
+import { TaskStatusType } from './db/models/TaskStatus';
+import { ENUM } from 'sequelize';
+
+import {
+  EnumDataType
+} from 'sequelize';
 
 
 // **** Variables **** //
@@ -95,7 +102,10 @@ app.get('/users', (_: Request, res: Response) => {
 //TODO figure out initial data population or migration betweeen production and development
 sequelize.sync({ force: true }).then(() => {
   console.log('Recreaing database from scratch');
+
   populateInitialRolesData();
+
+  populateInitialRanksData();
 
   populateInitialMaintenanceData();
 
@@ -103,6 +113,74 @@ sequelize.sync({ force: true }).then(() => {
 
   populateInitialTasksStatusesData();
 });
+
+function populateInitialRanksData() {
+  Rank.create({
+    id: 1,
+    name: 'Baby boy',
+    points: 0,
+  });
+
+  Rank.create({
+    id: 2,
+    name: 'Mama\'s boy',
+    points: 100,
+  });
+
+  Rank.create({
+    id: 3,
+    name: 'Nasty toddler',
+    points: 200,
+  });
+
+  Rank.create({
+    id: 4,
+    name: 'Emotional hurricane 🌀',
+    points: 300,
+  });
+
+  Rank.create({
+    id: 5,
+    name: 'Almost human',
+    points: 400,
+  });
+
+  Rank.create({
+    id: 6,
+    name: 'Balanced and smart ♎',
+    points: 500,
+  });
+
+  Rank.create({
+    id: 7,
+    name: 'Lonely Jedi',
+    points: 600,
+  });
+
+  Rank.create({
+    id: 8,
+    name: 'Needy narcissist',
+    points: 700,
+  });
+
+  Rank.create({
+    id: 9,
+    name: 'Godlike',
+    points: 800,
+  });
+
+  Rank.create({
+    id: 10,
+    name: 'Nirvana level',
+    points: 900,
+  });
+
+  Rank.create({
+    id: 11,
+    name: 'Diamond member',
+    points: 1000,
+  });
+}
 
 function populateInitialRolesData() {
   Role.create({
@@ -128,6 +206,7 @@ function populateInitialMaintenanceData() {
     gender: 'male',
     username: 'Naoru',
     password: '111',
+    rankId: 1,
   }).then((user) => user.setRoles([3]));
 
   User.create({
@@ -136,6 +215,7 @@ function populateInitialMaintenanceData() {
     gender: 'male',
     username: 'SettleScores',
     password: '222',
+    rankId: 1,
   }).then((user) => user.setRoles([3]));
 
   User.create({
@@ -144,6 +224,7 @@ function populateInitialMaintenanceData() {
     gender: 'female',
     username: 'Damato',
     password: '333',
+    rankId: 1,
   }).then((user) => user.setRoles([3]));
 
   User.create({
@@ -152,6 +233,7 @@ function populateInitialMaintenanceData() {
     gender: 'male',
     username: 'Moder',
     password: '444',
+    rankId: 1,
   }).then((user) => user.setRoles([2]));
 
   User.create({
@@ -160,6 +242,7 @@ function populateInitialMaintenanceData() {
     gender: 'male',
     username: 'User',
     password: '555',
+    rankId: 1,
   }).then((user) => user.setRoles([1]));
 }
 
@@ -218,7 +301,7 @@ function populateInitialTasksStatusesData() {
     userId: -1,
     taskId: -1,
     fileName: '_',
-    status: '_',
+    status: 'Unknown',
   });
 }
 

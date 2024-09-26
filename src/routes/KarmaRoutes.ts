@@ -11,6 +11,8 @@ import { LogOutRequest } from '@src/middleware/verifyLogOut';
 import { getAllTasks } from '@src/controllers/tasksController';
 import { IAuthReq } from './types/types';
 import { uploadTheFile } from '@src/controllers/tasksController';
+import { creepInTheTask } from '@src/controllers/tasksController';
+import { getTheUserProfile } from '@src/controllers/userController';
 
 function answerHelloKarma(_: IReq, response: IRes) {
   return response.status(HttpStatusCodes.OK).json({ message: 'Hello Karma' });
@@ -18,11 +20,13 @@ function answerHelloKarma(_: IReq, response: IRes) {
 
 async function getAllRoles(_: IReq, response: IRes) {
   const roles = await Role.findAll({});
+
   response.status(HttpStatusCodes.OK).json(roles);
 }
 
 async function getAllUsers(_: IReq, response: IRes) {
   const users = await User.findAll({});
+
   response.status(HttpStatusCodes.OK).json(users);
 }
 
@@ -44,7 +48,15 @@ function getTasks(request: IReq, response: IRes) {
 
 function uploadFile(request: IReq, response: IRes) {
   return uploadTheFile(request as IAuthReq, response);
-} 
+}
+
+function creepInTask(request: IReq, response: IRes) {
+  return creepInTheTask(request as IAuthReq, response);
+}
+
+function getUserProfile(request: IReq, response: IRes) {
+  return getTheUserProfile(request as IAuthReq, response);
+}
 
 export default {
   answerHelloKarma,
@@ -55,4 +67,6 @@ export default {
   logoutUser,
   getTasks,
   uploadFile,
+  creepInTask,
+  getUserProfile
 } as const;
