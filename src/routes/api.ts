@@ -51,8 +51,8 @@ userRouter.delete(
 
 const karmaRouter = Router();
 karmaRouter.get(
-    Paths.Karma.Hello,
-    KarmaRoutes.answerHelloKarma,
+  Paths.Karma.Hello,
+  KarmaRoutes.answerHelloKarma,
 );
 
 karmaRouter.get(
@@ -67,7 +67,7 @@ karmaRouter.get(
 
 karmaRouter.post(
   Paths.Karma.Register,
-  [ checkDuplicateUsernameOrEmail, checkRolesExisted ], /// in Express's Router second param is array of middlewares
+  [checkDuplicateUsernameOrEmail, checkRolesExisted], /// in Express's Router second param is array of middlewares
   KarmaRoutes.registerUser,
 );
 
@@ -87,13 +87,13 @@ karmaRouter.get(
   KarmaRoutes.getTasks,
 )
 
- karmaRouter.post(
-   Paths.Karma.UploadFile,
-   [ authenticate, prepareLoader() ],
-   KarmaRoutes.uploadFile
- );
+karmaRouter.post(
+  Paths.Karma.UploadFile,
+  [authenticate, prepareLoader()],
+  KarmaRoutes.uploadFile
+);
 
- karmaRouter.post(
+karmaRouter.post(
   Paths.Karma.CreepInTask,
   authenticate,
   KarmaRoutes.creepInTask
@@ -105,8 +105,8 @@ karmaRouter.get(
   KarmaRoutes.getUserProfile,
 );
 
- // Add UserRouter
- apiRouter.use(Paths.Users.Base, userRouter);
+// Add UserRouter
+apiRouter.use(Paths.Users.Base, userRouter);
 
 /// Add KarmaRouter
 apiRouter.use(Paths.Karma.Base, karmaRouter);

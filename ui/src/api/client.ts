@@ -1,8 +1,12 @@
 export const login = (username: string | null, password: string | null): Promise<string> => {
-    return fetch('/api/logic', {
+    return fetch('/api/karma/login', {
         method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
-            username,
+            usernameOrEmail: username,
             password
         })
     })

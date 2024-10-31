@@ -81,22 +81,29 @@ app.use(
 // ** Front-End Content ** //
 
 // Set views directory (html)
-const viewsDir = path.join(__dirname, 'views');
-app.set('views', viewsDir);
+// const viewsDir = path.join(__dirname, 'views');
+// app.set('views', viewsDir);
 
 // Set static directory (js and css).
-const staticDir = path.join(__dirname, 'public');
+const staticDir = path.join(__dirname, '../ui/dist');
 app.use(express.static(staticDir));
 
-// Nav to users pg by default
-app.get('/', (_: Request, res: Response) => {
-  return res.redirect('/users');
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api')) {
+    return res.status(404).send('API endpoint not found');
+  }
+  res.sendFile(path.join(__dirname, '../ui/dist', 'index.html'));
 });
 
-// Redirect to login if not logged in.
-app.get('/users', (_: Request, res: Response) => {
-  return res.sendFile('users.html', { root: viewsDir });
-});
+// Nav to users pg by default
+// app.get('/', (_: Request, res: Response) => {
+//   return res.redirect('/users');
+// });
+
+// // Redirect to login if not logged in.
+// app.get('/users', (_: Request, res: Response) => {
+//   return res.sendFile('users.html', { root: viewsDir });
+// });
 
 //TODO remove force: true to keep the data on server restart.
 //TODO figure out initial data population or migration betweeen production and development
