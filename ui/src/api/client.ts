@@ -1,5 +1,5 @@
 export const login = (username: string | null, password: string | null): Promise<string> => {
-    return fetch('/api/karma/login', {
+    return fetch('http://localhost:3000/api/karma/login', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',

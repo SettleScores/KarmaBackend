@@ -11,6 +11,7 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import { login } from '../../api/client';
 import { SetAuthContext } from '../../state/authContext';
+import { useNavigate } from "react-router-dom";
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -55,6 +56,8 @@ export default function SignIn() {
 
     const setAuthContext = useContext(SetAuthContext);
 
+    const navigate = useNavigate();
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (emailError || passwordError) {
@@ -65,6 +68,7 @@ export default function SignIn() {
         try {
             const accessToken = await login(data.get('email') as string, data.get('password') as string);
             setAuthContext(accessToken);
+            navigate('/dashboard');
         } catch (err) {
             setPasswordError(true);
             setPasswordErrorMessage(JSON.stringify(err));

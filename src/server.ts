@@ -33,6 +33,9 @@ import {
   EnumDataType
 } from 'sequelize';
 
+import bcrypt from 'bcrypt';
+import cors from 'cors';
+
 
 // **** Variables **** //
 
@@ -41,9 +44,11 @@ const app = express();
 // **** Setup **** //
 
 // Basic middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(EnvVars.CookieProps.Secret));
+
 
 // Show routes called in console during development
 if (EnvVars.NodeEnv === NodeEnvs.Dev.valueOf()) {
@@ -251,6 +256,15 @@ function populateInitialMaintenanceData() {
     password: '555',
     rankId: 1,
   }).then((user) => user.setRoles([1]));
+
+  User.create({
+    fullName: 'Admin Adminovych',
+    email: 'admin@gmail.com',
+    gender: 'male',
+    username: 'Admin',
+    password: bcrypt.hashSync('6666', 8),
+    rankId: 1,
+  }).then((user) => user.setRoles([3]));
 }
 
 function populateInitialTasksData() {
