@@ -1,13 +1,9 @@
 import SignIn from './components/SignIn/SignIn';
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
 
 import './App.css'
 import Data from './components/Data/Data';
 import { AuthContextProvider } from './state/authContext';
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
 
 // const router = createBrowserRouter([
@@ -33,13 +29,17 @@ function App() {
   return (
     <>
       <AuthContextProvider>
-        <Routes>
-          <Route path="/" element={<div>Hello world!</div>} />
-          <Route path="/sign" element={<SignIn />} />
-          <ProtectedRoute>
-            <Route path="/dashboard"> element={<Data />} </Route>
-          </ProtectedRoute>
-        </Routes>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<div>Hello world!</div>} />
+            <Route path="/sign" element={<SignIn />} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Data />
+              </ProtectedRoute>
+            } />
+          </Routes>
+        </BrowserRouter>
       </AuthContextProvider>
     </>
   )
