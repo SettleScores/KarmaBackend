@@ -1,9 +1,10 @@
 import SignIn from './components/SignIn/SignIn';
 
 import './App.css'
-import Data from './components/Data/Data';
+///import Data from './components/Data/Data';
+import Users from './components/Users/Users';
 import { AuthContextProvider } from './state/authContext';
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
 
 // const router = createBrowserRouter([
@@ -31,11 +32,11 @@ function App() {
       <AuthContextProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<div>Hello world!</div>} />
+            <Route path="/" element={<Navigate to="/sign" />} />
             <Route path="/sign" element={<SignIn />} />
             <Route path="/dashboard" element={
               <ProtectedRoute>
-                <Data />
+                <Users />
               </ProtectedRoute>
             } />
           </Routes>

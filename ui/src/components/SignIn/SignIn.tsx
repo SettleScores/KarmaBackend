@@ -12,6 +12,7 @@ import { styled } from '@mui/material/styles';
 import { login } from '../../api/client';
 import { SetAuthContext } from '../../state/authContext';
 import { useNavigate } from "react-router-dom";
+import { sendPushForAll } from '../../api/client';
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -67,6 +68,7 @@ export default function SignIn() {
         const data = new FormData(event.currentTarget);
         try {
             const accessToken = await login(data.get('email') as string, data.get('password') as string);
+            ///sendPushForAll('KarmaApp', 'Are you ready to complete your first task?! qqq');
             setAuthContext(accessToken);
             navigate('/dashboard');
         } catch (err) {

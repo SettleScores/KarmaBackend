@@ -23,5 +23,8 @@ export default {
     UploadFile: '/uploadfile',
     CreepInTask: '/creepintask',
     User: '/user',
+    Push: '/pushpush',
+    PushToken: '/pushtoken',
+    PushForAll: '/pushpushall',
   },
 } as const;

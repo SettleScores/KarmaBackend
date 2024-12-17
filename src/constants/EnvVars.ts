@@ -31,4 +31,7 @@ export default {
     Dbserver: (process.env.DBSERVER ?? ''),
     Database: (process.env.DATABASE ?? ''),
   },
+  Firebase: {
+    PrivateKeyPath: (process.env.PRIVATE_KEY_PATH ??  ''),
+  },
 } as const;
