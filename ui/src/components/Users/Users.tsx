@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -16,9 +16,10 @@ import {
   useQuery,
 } from '@tanstack/react-query'; //note: this is TanStack React Query V5
 import { Button } from "@mui/material"
-import { sendPushForAll } from '../../api/client';
+import { getUsers, sendPushForAll } from '../../api/client';
+import { AuthContext } from '../../state/authContext';
 
-type UserApiResponse = {
+export type UserApiResponse = {
     data: Array<User>;
 
     cunt: number;
@@ -37,6 +38,8 @@ type User = {
 };
 
 const Example = () => {
+    const authToken = useContext (AuthContext) as string;
+
     //manage our own state for stuff we want to pass to the API
     const [columnFilters, setColumnFilters] = useState<MRT_ColumnFiltersState>(
       [],
@@ -65,22 +68,7 @@ const Example = () => {
         sorting, //refetch when sorting changes
       ],
       queryFn: async () => {
-        const fetchURL = new URL('api/karma/users', 'http://localhost:3000/');
-  
-        //read our state and pass it to the API as query params
-        fetchURL.searchParams.set(
-          'start',
-          `${pagination.pageIndex * pagination.pageSize}`,
-        );
-        fetchURL.searchParams.set('size', `${pagination.pageSize}`);
-        fetchURL.searchParams.set('filters', JSON.stringify(columnFilters ?? []));
-        fetchURL.searchParams.set('globalFilter', globalFilter ?? '');
-        fetchURL.searchParams.set('sorting', JSON.stringify(sorting ?? []));
-  
-        //use whatever fetch library you want, fetch, axios, etc
-        const response = await fetch(fetchURL.href);
-        const json = (await response.json()) as UserApiResponse;
-        return json;
+        return getUsers(authToken, columnFilters, globalFilter, sorting, pagination);
       },
       placeholderData: keepPreviousData, //don't go to 0 rows when refetching or paginating to next page
     });
@@ -139,10 +127,10 @@ const Example = () => {
     const table = useMaterialReactTable({
       columns,
       data,
-      initialState: { showColumnFilters: true },
-      manualFiltering: true, //turn off built-in client-side filtering
-      manualPagination: true, //turn off built-in client-side pagination
-      manualSorting: true, //turn off built-in client-side sorting
+      initialState: { showColumnFilters: false },
+      manualFiltering: false, //turn off built-in client-side filtering
+      manualPagination: false, //turn off built-in client-side pagination
+      manualSorting: false, //turn off built-in client-side sorting
       muiToolbarAlertBannerProps: isError
         ? {
             color: 'error',
@@ -178,7 +166,8 @@ const Example = () => {
   const queryClient = new QueryClient();
 
   const SendPushForAllButt = () => {
-    return <Button onClick={()=>{ sendPushForAll('KarmaApp', 'Are you ready to complete your first task?! qqq') }}>Send Push For All</Button>
+    /// TODO Right accessToken
+    return <Button onClick={()=>{ sendPushForAll('', 'KarmaApp', 'Are you ready to complete your first task?! qqq') }}>Send Push For All</Button>
   };
   
   const ExampleWithReactQueryProvider = () => (

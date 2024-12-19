@@ -15,6 +15,7 @@ import { creepInTheTask } from '@src/controllers/tasksController';
 import { getTheUserProfile } from '@src/controllers/userController';
 import { pushTheTempo } from '@src/controllers/pushesController';
 import { pushTheToken } from '@src/controllers/pushesController';
+import { pushTheTempoForAll } from '@src/controllers/pushesController';
 
 function answerHelloKarma(_: IReq, response: IRes) {
   return response.status(HttpStatusCodes.OK).json({ message: 'Hello Karma' });
@@ -73,6 +74,10 @@ function pushToken(request: IReq, response: IRes) {
   return pushTheToken(request as IAuthReq, response);
 }
 
+function pushPushForAll(request: IReq, response: IRes) {
+  return pushTheTempoForAll(request as IAuthReq, response);
+}
+
 export default {
   answerHelloKarma,
   getAllRoles,
@@ -86,4 +91,5 @@ export default {
   getUserProfile,
   pushPush,
   pushToken,
+  pushPushForAll,
 } as const;

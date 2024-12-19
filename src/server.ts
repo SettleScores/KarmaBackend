@@ -22,28 +22,18 @@ import { RouteError } from "@src/other/classes";
 import sequelize from "./db/postgreConnection";
 import { Role } from "./db/models/Role";
 import { Rank } from "./db/models/Rank";
-import { User } from "./db/models/User";
 import { Task } from "./db/models/Task";
 import { TaskStatus } from "./db/models/TaskStatus";
 import "./db/associations";
-import { TaskStatusType } from "./db/models/TaskStatus";
-import { ENUM } from "sequelize";
 import { PushToken } from "./db/models/PushToken";
-
-import { EnumDataType } from "sequelize";
-
-import bcrypt from "bcrypt";
 import cors from "cors";
 import populateInitialMaintenanceData from "./usersPopulation";
 
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase-admin/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 import { getMessaging } from "firebase-admin/messaging";
-var admin = require("firebase-admin");
 
-var serviceAccount = require(EnvVars.Firebase.PrivateKeyPath);
+const admin = require("firebase-admin");
+
+const serviceAccount = require(EnvVars.Firebase.PrivateKeyPath);
 
 // **** Variables **** //
 
@@ -121,8 +111,6 @@ app.get("*", (req, res) => {
 //TODO figure out initial data population or migration betweeen production and development
 ///sequelize.sync({ force: true }).then(() => {
 sequelize.sync().then(() => {
-  console.log("Recreaing database from scratch");
-
   populateInitialRolesData();
 
   populateInitialRanksData();
@@ -141,19 +129,6 @@ sequelize.sync().then(() => {
 
   console.log('qqq Private key path: ' + EnvVars.Firebase.PrivateKeyPath);
 
-// Your web app's Firebase configuration
-// const firebaseConfig = {
-//   apiKey: "AIzaSyAr7nGOCR0MVffORx_WS6T7ypNf0qFJO7U",
-//   authDomain: "karma-18c4c.firebaseapp.com",
-//   projectId: "karma-18c4c",
-//   storageBucket: "karma-18c4c.firebasestorage.app",
-//   messagingSenderId: "352593909346",
-//   appId: "1:352593909346:web:aa620e397125f292cba33b"
-// };
-
-// Initialize Firebase
-///const app = initializeApp(firebaseConfig);
-
   // This registration token comes from the client FCM SDKs.
   const registrationToken = "cg6dGx36TNG_f2zE8-LbsX:APA91bHYCNlRu5P_jEKf1MUyvhoWZnRD8GMa4QWlNXdz1-UUBdtvIxFtNMMg8_TUiHLEOd6S368PtHAQQg_S6o9wJLNcrJQdXCa8j2BPJJbyuG0DqAeqvLE"; /// This token goes from device, where it is generated via Firebase SDK
 
@@ -165,8 +140,6 @@ sequelize.sync().then(() => {
     token: registrationToken,
   };
 
-  // Send a message to the device corresponding to the provided
-  // registration token.
   getMessaging()
     .send(message)
     .then((response) => {
@@ -262,244 +235,6 @@ function populateInitialRolesData() {
     name: "admin",
   });
 }
-
-// function populateInitialMaintenanceData() {
-//   User.create({
-//     fullName: 'Michael Kapustey',
-//     email: 'michaelkapustey@gmail.com',
-//     gender: 'male',
-//     username: 'Naoru',
-//     password: '111',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([3]));
-
-//   User.create({
-//     fullName: 'Vlad Hanych',
-//     email: 'vvh.uzh@gmail.com',
-//     gender: 'male',
-//     username: 'SettleScores',
-//     password: '222',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([3]));
-
-//   User.create({
-//     fullName: 'Daria Titova',
-//     email: 'daria@gmail.com', /// Removed Daria's real email dariatitova1192@gmail.com to avoid clashes duting registration)
-//     gender: 'female',
-//     username: 'Damato',
-//     password: '333',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([3]));
-
-//   User.create({
-//     fullName: 'Moderator Moderatorovych',
-//     email: 'moderator@gmail.com',
-//     gender: 'male',
-//     username: 'Moder',
-//     password: '444',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([2]));
-
-//   User.create({
-//     fullName: 'User Testovych',
-//     email: 'user@gmail.com',
-//     gender: 'male',
-//     username: 'User',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'Admin Adminovych',
-//     email: 'admin@gmail.com',
-//     gender: 'male',
-//     username: 'Admin',
-//     password: bcrypt.hashSync('6666', 8),
-//     rankId: 1,
-//   }).then((user) => user.setRoles([3]));
-
-// // **** Additional users region **** //
-
-//   User.create({
-//     fullName: 'User Additionalych1',
-//     email: 'useradd1@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd1',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych2',
-//     email: 'useradd2@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd2',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych3',
-//     email: 'useradd3@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd3',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych4',
-//     email: 'useradd4@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd4',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych5',
-//     email: 'useradd5@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd5',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych6',
-//     email: 'useradd6@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd6',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych7',
-//     email: 'useradd7@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd7',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych8',
-//     email: 'useradd8@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd8',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych9',
-//     email: 'useradd9@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd9',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych10',
-//     email: 'useradd10@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd10',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych11',
-//     email: 'useradd11@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd11',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych12',
-//     email: 'useradd12@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd12',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych13',
-//     email: 'useradd13@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd13',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych14',
-//     email: 'useradd14@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd14',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych15',
-//     email: 'useradd15@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd15',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych16',
-//     email: 'useradd16@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd16',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych17',
-//     email: 'useradd17@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd17',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych18',
-//     email: 'useradd18@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd18',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych19',
-//     email: 'useradd19@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd19',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-
-//   User.create({
-//     fullName: 'User Additionalych20',
-//     email: 'useradd20@gmail.com',
-//     gender: 'male',
-//     username: 'Useradd20',
-//     password: '555',
-//     rankId: 1,
-//   }).then((user) => user.setRoles([1]));
-// }
 
 function populateInitialTasksData() {
   Task.create({

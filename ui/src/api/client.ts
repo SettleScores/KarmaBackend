@@ -1,3 +1,10 @@
+import {
+    type MRT_ColumnFiltersState,
+    type MRT_PaginationState,
+    type MRT_SortingState,
+  } from 'material-react-table';
+import { type UserApiResponse } from "../components/Users/Users.ts";
+
 export const login = (username: string | null, password: string | null): Promise<string> => {
     return fetch('http://localhost:3000/api/karma/login', {
         method: 'POST',
@@ -14,13 +21,13 @@ export const login = (username: string | null, password: string | null): Promise
         .then(res => res.accessToken)
 }
 
-/// TODO Add Authorization after first tests: headers: {'authorization': 'Bearer ' + accessToken 
-export const sendPush = (username: string | null) => {
+export const sendPush = (accessToken: string, username: string | null) => {
     return fetch('http://localhost:3000/api/karma/pushpush', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'authorization': 'Bearer ' + accessToken
         },
         body: JSON.stringify({
             usernameOrEmail: username, /// TODO Here will be some criteria for push from Adminka
@@ -28,14 +35,14 @@ export const sendPush = (username: string | null) => {
 
     })
 }
-
-/// TODO Add Authorization after first tests: headers: {'authorization': 'Bearer ' + accessToken }      
-export const sendPushForAll = (title: string | null, body: string | null) => {
+  
+export const sendPushForAll = (accessToken: string, title: string | null, body: string | null) => {
     return fetch('http://localhost:3000/api/karma/pushpushall', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'authorization': 'Bearer ' + accessToken
         },
         body: JSON.stringify({
             title: title,
@@ -44,16 +51,28 @@ export const sendPushForAll = (title: string | null, body: string | null) => {
     })
 }
 
-//TODO fix Authorization /// Seems to be fixed
-//TODO fix return type
-//TODO return correct data
-export const getUsers = (accessToken: string): Promise<any[]> => {
-    return fetch('/api/logic', {
-        headers: {
-            'authorization': 'Bearer ' + accessToken
-        }
-    })
-        .then(res => res.json())
-        .then(res => res.users)
+export const getUsers = async (accessToken: string, columnFilters: MRT_ColumnFiltersState, globalFilter: string, sorting: MRT_SortingState, pagination: MRT_PaginationState): Promise<UserApiResponse> => {
+  const fetchURL = new URL("api/karma/users", "http://localhost:3000/");
 
+  //read our state and pass it to the API as query params
+  fetchURL.searchParams.set(
+    "start",
+    `${pagination.pageIndex * pagination.pageSize}`
+  );
+  fetchURL.searchParams.set("size", `${pagination.pageSize}`);
+  fetchURL.searchParams.set("filters", JSON.stringify(columnFilters ?? []));
+  fetchURL.searchParams.set("globalFilter", globalFilter ?? "");
+  fetchURL.searchParams.set("sorting", JSON.stringify(sorting ?? []));
+
+  const response = await fetch(fetchURL, {
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      authorization: "Bearer " + accessToken,
+    },
+  });
+
+  const json = (await response.json()) as UserApiResponse;
+
+  return json;
 }

@@ -120,7 +120,7 @@ karmaRouter.post(
 karmaRouter.post(
   Paths.Karma.PushForAll,
   authenticate,
-  KarmaRoutes.pushToken
+  KarmaRoutes.pushPushForAll
 );
 
 // Add UserRouter
