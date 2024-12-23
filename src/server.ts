@@ -110,7 +110,7 @@ app.get("*", (req, res) => {
 //TODO remove force: true to keep the data on server restart.
 //TODO figure out initial data population or migration betweeen production and development
 ///sequelize.sync({ force: true }).then(() => {
-sequelize.sync().then(() => {
+sequelize.sync({ force: true }).then(() => {
   populateInitialRolesData();
 
   populateInitialRanksData();

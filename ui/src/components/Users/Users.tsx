@@ -166,8 +166,8 @@ const Example = () => {
   const queryClient = new QueryClient();
 
   const SendPushForAllButt = () => {
-    /// TODO Right accessToken
-    return <Button onClick={()=>{ sendPushForAll('', 'KarmaApp', 'Are you ready to complete your first task?! qqq') }}>Send Push For All</Button>
+    const authToken = useContext (AuthContext) as string;
+    return <Button onClick={()=>{ sendPushForAll(authToken, 'KarmaApp', 'Are you ready to complete your first task?! qqq') }}>Send Push For All</Button>
   };
   
   const ExampleWithReactQueryProvider = () => (

@@ -5,10 +5,10 @@ import {
   } from 'material-react-table';
 import { type UserApiResponse } from "../components/Users/Users.ts";
 
-const baseUrl = 'http://localhost:3000'
+const baseUrl = 'http://localhost:3000/'
 
 export const login = (username: string | null, password: string | null): Promise<string> => {
-    return fetch(`${baseUrl}/api/karma/login`, {
+    return fetch(`${baseUrl}api/karma/login`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -24,7 +24,7 @@ export const login = (username: string | null, password: string | null): Promise
 }
 
 export const sendPush = (accessToken: string, username: string | null) => {
-    return fetch(`${baseUrl}/api/karma/pushpush`, {
+    return fetch(`${baseUrl}api/karma/pushpush`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -39,7 +39,7 @@ export const sendPush = (accessToken: string, username: string | null) => {
 }
   
 export const sendPushForAll = (accessToken: string, title: string | null, body: string | null) => {
-    return fetch(`${baseUrl}/api/karma/pushpushall`, {
+    return fetch(`${baseUrl}api/karma/pushpushall`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
