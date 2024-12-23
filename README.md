@@ -1,43 +1,21 @@
-## About
+## Release steps
 
-This project was created with [express-generator-typescript](https://github.com/seanpmaxwell/express-generator-typescript).
+Create a special release branch named `release_vN`.
+Go to ui folder client.ts and replace baseUrl with an empty string
 
+In ui folder run
 
-## Available Scripts
+>`npm install`
+`npm run build`
 
-### `npm run dev`
+Go back to server folder
 
-Run the server in development mode.
+Run 
+>`npm install`
+`npm run build:prod`
 
-### `npm test`
+Commit and push
 
-Run all unit-tests with hot-reloading.
-
-### `npm test -- --testFile="name of test file" (i.e. --testFile=Users).`
-
-Run a single unit-test.
-
-### `npm run test:no-reloading`
-
-Run all unit-tests without hot-reloading.
-
-### `npm run lint`
-
-Check for linting errors.
-
-### `npm run build`
-
-Build the project for production.
-
-### `npm start`
-
-Run the production build (Must be built first).
-
-### `npm start -- --env="name of env file" (default is production).`
-
-Run production build with a different env file.
-
-
-## Additional Notes
-
-- If `npm run dev` gives you issues with bcrypt on MacOS you may need to run: `npm rebuild bcrypt --build-from-source`. 
+Go to server, pull the branch 
+Copy production.env values
+Restart the server

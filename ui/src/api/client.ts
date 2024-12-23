@@ -5,8 +5,10 @@ import {
   } from 'material-react-table';
 import { type UserApiResponse } from "../components/Users/Users.ts";
 
+const baseUrl = 'http://localhost:3000'
+
 export const login = (username: string | null, password: string | null): Promise<string> => {
-    return fetch('http://localhost:3000/api/karma/login', {
+    return fetch(`${baseUrl}/api/karma/login`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -22,7 +24,7 @@ export const login = (username: string | null, password: string | null): Promise
 }
 
 export const sendPush = (accessToken: string, username: string | null) => {
-    return fetch('http://localhost:3000/api/karma/pushpush', {
+    return fetch(`${baseUrl}/api/karma/pushpush`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -37,7 +39,7 @@ export const sendPush = (accessToken: string, username: string | null) => {
 }
   
 export const sendPushForAll = (accessToken: string, title: string | null, body: string | null) => {
-    return fetch('http://localhost:3000/api/karma/pushpushall', {
+    return fetch(`${baseUrl}/api/karma/pushpushall`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -52,7 +54,7 @@ export const sendPushForAll = (accessToken: string, title: string | null, body: 
 }
 
 export const getUsers = async (accessToken: string, columnFilters: MRT_ColumnFiltersState, globalFilter: string, sorting: MRT_SortingState, pagination: MRT_PaginationState): Promise<UserApiResponse> => {
-  const fetchURL = new URL("api/karma/users", "http://localhost:3000/");
+  const fetchURL = new URL("api/karma/users", baseUrl);
 
   //read our state and pass it to the API as query params
   fetchURL.searchParams.set(
