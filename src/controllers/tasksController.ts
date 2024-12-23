@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import EnvVars from '@src/constants/EnvVars';
 import { Op } from 'sequelize';
 import { Sequelize } from 'sequelize';
+import { extractToken } from '@src/util/generateToken';
 
 
 export interface CreepInTaskRequest { /// TODO Use that; and avoid 'any' in creepInTheTask
@@ -13,9 +14,7 @@ export interface CreepInTaskRequest { /// TODO Use that; and avoid 'any' in cree
 }
 
 export const getAllTasks = async (request: IAuthReq, response: IRes) => { /// заместо 
-  const token = request.headers.authorization || ''
-
-  const tokenAfterSplit = token.split(' ')[1];
+  const { tokenAfterSplit } = extractToken(request);
 
   const userId = (jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any).id
 
@@ -38,11 +37,7 @@ export const getAllTasks = async (request: IAuthReq, response: IRes) => { /// з
 
 export const uploadTheFile = (request: IAuthReq, response: IRes) => {
   try {
-    const token = request.headers.authorization || '' /// subtle nuance; if undefined or null replace with empty string ''
-  
-    const tokenAfterSplit = token.split(' ')[1];
-
-    const requestAny = request as any /// TODO it would be fino if it was possible to do without 'any'
+    const { requestAny, tokenAfterSplit } = extractToken(request);
 
     TaskStatus.destroy({ where: { taskId: requestAny.body.taskId } });
 
@@ -60,15 +55,11 @@ export const uploadTheFile = (request: IAuthReq, response: IRes) => {
 };
 
 export const creepInTheTask = (request: IAuthReq, response: IRes) => {
-  const token = request.headers.authorization || '';
-
-  const tokenAfterSplit = token.split(' ')[1];
+  const { requestAny, tokenAfterSplit } = extractToken(request);
 
   const userId: number = (
     jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any
   ).id;
-
-  const requestAny = request as any; /// TODO it would be fino if it was possible to do without 'any'
 
   TaskStatus.findOne({
     where: {

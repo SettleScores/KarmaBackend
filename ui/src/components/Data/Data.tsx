@@ -68,7 +68,7 @@ const data: Person[] = [
 const Data = () => {
     //TODO use data fetching example https://www.material-react-table.com/docs/examples/react-query
 
-    //should be memoized or stable
+    //should be memorized or stable
     const columns = useMemo<MRT_ColumnDef<Person>[]>(
         () => [
             {

@@ -2,40 +2,38 @@
  * Setup express server.
  */
 
-import cookieParser from 'cookie-parser';
-import morgan from 'morgan';
-import path from 'path';
-import helmet from 'helmet';
-import express, { Request, Response, NextFunction } from 'express';
-import logger from 'jet-logger';
+import cookieParser from "cookie-parser";
+import morgan from "morgan";
+import path from "path";
+import helmet from "helmet";
+import express, { Request, Response, NextFunction } from "express";
+import logger from "jet-logger";
 
-import 'express-async-errors';
+import "express-async-errors";
 
-import BaseRouter from '@src/routes/api';
-import Paths from '@src/constants/Paths';
+import BaseRouter from "@src/routes/api";
+import Paths from "@src/constants/Paths";
 
-import EnvVars from '@src/constants/EnvVars';
-import HttpStatusCodes from '@src/constants/HttpStatusCodes';
+import EnvVars from "@src/constants/EnvVars";
+import HttpStatusCodes from "@src/constants/HttpStatusCodes";
 
-import { NodeEnvs } from '@src/constants/misc';
-import { RouteError } from '@src/other/classes';
-import sequelize from './db/postgreConnection';
-import { Role } from './db/models/Role';
-import { Rank } from './db/models/Rank';
-import { User } from './db/models/User';
-import { Task } from './db/models/Task';
-import { TaskStatus } from './db/models/TaskStatus';
-import './db/associations';
-import { TaskStatusType } from './db/models/TaskStatus';
-import { ENUM } from 'sequelize';
+import { NodeEnvs } from "@src/constants/misc";
+import { RouteError } from "@src/other/classes";
+import sequelize from "./db/postgreConnection";
+import { Role } from "./db/models/Role";
+import { Rank } from "./db/models/Rank";
+import { Task } from "./db/models/Task";
+import { TaskStatus } from "./db/models/TaskStatus";
+import "./db/associations";
+import { PushToken } from "./db/models/PushToken";
+import cors from "cors";
+import populateInitialMaintenanceData from "./usersPopulation";
 
-import {
-  EnumDataType
-} from 'sequelize';
+import { getMessaging } from "firebase-admin/messaging";
 
-import bcrypt from 'bcrypt';
-import cors from 'cors';
+const admin = require("firebase-admin");
 
+const serviceAccount = require(EnvVars.Firebase.PrivateKeyPath);
 
 // **** Variables **** //
 
@@ -49,10 +47,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(EnvVars.CookieProps.Secret));
 
-
 // Show routes called in console during development
 if (EnvVars.NodeEnv === NodeEnvs.Dev.valueOf()) {
-  app.use(morgan('dev'));
+  app.use(morgan("dev"));
 }
 
 // Security
@@ -90,14 +87,14 @@ app.use(
 // app.set('views', viewsDir);
 
 // Set static directory (js and css).
-const staticDir = path.join(__dirname, '../ui/dist');
+const staticDir = path.join(__dirname, "../ui/dist");
 app.use(express.static(staticDir));
 
-app.get('*', (req, res) => {
-  if (req.path.startsWith('/api')) {
-    return res.status(404).send('API endpoint not found');
+app.get("*", (req, res) => {
+  if (req.path.startsWith("/api")) {
+    return res.status(404).send("API endpoint not found");
   }
-  res.sendFile(path.join(__dirname, '../ui/dist', 'index.html'));
+  res.sendFile(path.join(__dirname, "../ui/dist", "index.html"));
 });
 
 // Nav to users pg by default
@@ -112,9 +109,8 @@ app.get('*', (req, res) => {
 
 //TODO remove force: true to keep the data on server restart.
 //TODO figure out initial data population or migration betweeen production and development
-sequelize.sync({ force: true }).then(() => {
-  console.log('Recreaing database from scratch');
-
+///sequelize.sync({ force: true }).then(() => {
+sequelize.sync().then(() => {
   populateInitialRolesData();
 
   populateInitialRanksData();
@@ -124,72 +120,101 @@ sequelize.sync({ force: true }).then(() => {
   populateInitialTasksData();
 
   populateInitialTasksStatusesData();
+
+  populateInitialPushTokensData();
+
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+  });
+
+  console.log('qqq Private key path: ' + EnvVars.Firebase.PrivateKeyPath);
+
+  // This registration token comes from the client FCM SDKs.
+  const registrationToken = "cg6dGx36TNG_f2zE8-LbsX:APA91bHYCNlRu5P_jEKf1MUyvhoWZnRD8GMa4QWlNXdz1-UUBdtvIxFtNMMg8_TUiHLEOd6S368PtHAQQg_S6o9wJLNcrJQdXCa8j2BPJJbyuG0DqAeqvLE"; /// This token goes from device, where it is generated via Firebase SDK
+
+  const message = {
+    notification: {
+      title: "KarmaApp",
+      body: "Do you want to complete the task?",
+    },
+    token: registrationToken,
+  };
+
+  getMessaging()
+    .send(message)
+    .then((response) => {
+      // Response is a message ID string.
+      console.log("Successfully sent message:", response);
+    })
+    .catch((error) => {
+      console.log("Error sending message:", error);
+    });
 });
 
 function populateInitialRanksData() {
   Rank.create({
     id: 1,
-    name: 'Baby boy',
+    name: "Baby boy",
     points: 0,
   });
 
   Rank.create({
     id: 2,
-    name: 'Mama\'s boy',
+    name: "Mama's boy",
     points: 100,
   });
 
   Rank.create({
     id: 3,
-    name: 'Nasty toddler',
+    name: "Nasty toddler",
     points: 200,
   });
 
   Rank.create({
     id: 4,
-    name: 'Emotional hurricane 🌀',
+    name: "Emotional hurricane 🌀",
     points: 300,
   });
 
   Rank.create({
     id: 5,
-    name: 'Almost human',
+    name: "Almost human",
     points: 400,
   });
 
   Rank.create({
     id: 6,
-    name: 'Balanced and smart ♎',
+    name: "Balanced and smart ♎",
     points: 500,
   });
 
   Rank.create({
     id: 7,
-    name: 'Lonely Jedi',
+    name: "Lonely Jedi",
     points: 600,
   });
 
   Rank.create({
     id: 8,
-    name: 'Needy narcissist',
+    name: "Needy narcissist",
     points: 700,
   });
 
   Rank.create({
     id: 9,
-    name: 'Godlike',
+    name: "Godlike",
     points: 800,
   });
 
   Rank.create({
     id: 10,
-    name: 'Nirvana level',
+    name: "Nirvana level",
     points: 900,
   });
 
   Rank.create({
     id: 11,
-    name: 'Diamond member',
+    name: "Diamond member",
     points: 1000,
   });
 }
@@ -197,123 +222,72 @@ function populateInitialRanksData() {
 function populateInitialRolesData() {
   Role.create({
     id: 1,
-    name: 'user',
+    name: "user",
   });
 
   Role.create({
     id: 2,
-    name: 'moderator',
+    name: "moderator",
   });
 
   Role.create({
     id: 3,
-    name: 'admin',
+    name: "admin",
   });
-}
-
-function populateInitialMaintenanceData() {
-  User.create({
-    fullName: 'Michael Kapustey',
-    email: 'michaelkapustey@gmail.com',
-    gender: 'male',
-    username: 'Naoru',
-    password: '111',
-    rankId: 1,
-  }).then((user) => user.setRoles([3]));
-
-  User.create({
-    fullName: 'Vlad Hanych',
-    email: 'vvh.uzh@gmail.com',
-    gender: 'male',
-    username: 'SettleScores',
-    password: '222',
-    rankId: 1,
-  }).then((user) => user.setRoles([3]));
-
-  User.create({
-    fullName: 'Daria Titova',
-    email: 'daria@gmail.com', /// Removed Daria's real email dariatitova1192@gmail.com to avoid clashes duting registration)
-    gender: 'female',
-    username: 'Damato',
-    password: '333',
-    rankId: 1,
-  }).then((user) => user.setRoles([3]));
-
-  User.create({
-    fullName: 'Moderator Moderatorovych',
-    email: 'moderator@gmail.com',
-    gender: 'male',
-    username: 'Moder',
-    password: '444',
-    rankId: 1,
-  }).then((user) => user.setRoles([2]));
-
-  User.create({
-    fullName: 'User Testovych',
-    email: 'user@gmail.com',
-    gender: 'male',
-    username: 'User',
-    password: '555',
-    rankId: 1,
-  }).then((user) => user.setRoles([1]));
-
-  User.create({
-    fullName: 'Admin Adminovych',
-    email: 'admin@gmail.com',
-    gender: 'male',
-    username: 'Admin',
-    password: bcrypt.hashSync('6666', 8),
-    rankId: 1,
-  }).then((user) => user.setRoles([3]));
 }
 
 function populateInitialTasksData() {
   Task.create({
-    description: 'Go to the contact list and text \"How are you?\" someone you didn\'t talk for a while',
+    description:
+      'Go to the contact list and text "How are you?" someone you didn\'t talk for a while',
   });
 
   Task.create({
-    description: 'Contact your cousins or far away relatives you didn\'t talk to forever',
+    description:
+      "Contact your cousins or far away relatives you didn't talk to forever",
   });
 
   Task.create({
-    description: 'Come over to any homeless person and ask if they need any help. Try to help them',
+    description:
+      "Come over to any homeless person and ask if they need any help. Try to help them",
   });
 
   Task.create({
-    description: 'Collect plastic bottles for 1 week and try to recycle them',
+    description: "Collect plastic bottles for 1 week and try to recycle them",
   });
 
   Task.create({
-    description: 'Try to go vegan for 1 day',
+    description: "Try to go vegan for 1 day",
   });
 
   Task.create({
-    description: 'Take care about your health. Make appointment and visit a dentist for a checkup',
+    description:
+      "Take care about your health. Make appointment and visit a dentist for a checkup",
   });
 
   Task.create({
-    description: 'Fix something in the house, that need a fix',
+    description: "Fix something in the house, that need a fix",
   });
 
   Task.create({
-    description: 'Clean inside your car',
+    description: "Clean inside your car",
   });
 
   Task.create({
-    description: 'To the laundry of the things that are not get washed frequently: blankets, pillow cases, etc',
+    description:
+      "To the laundry of the things that are not get washed frequently: blankets, pillow cases, etc",
   });
 
   Task.create({
-    description: 'Visit a concert',
+    description: "Visit a concert",
   });
 
   Task.create({
-    description: 'Buy natural flowers to decorate your house',
+    description: "Buy natural flowers to decorate your house",
   });
 
   Task.create({
-    description: 'Go to the gym and do a good workout',
+    description: "Go to the gym and do a good workout",
   });
 }
 
@@ -321,8 +295,15 @@ function populateInitialTasksStatusesData() {
   TaskStatus.create({
     userId: -1,
     taskId: -1,
-    fileName: '_',
-    status: 'Unknown',
+    fileName: "_",
+    status: "Unknown",
+  });
+}
+
+function populateInitialPushTokensData() {
+  PushToken.create({
+    userId: -1,
+    token: "_",
   });
 }
 

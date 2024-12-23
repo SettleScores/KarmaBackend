@@ -13,6 +13,9 @@ import { IAuthReq } from './types/types';
 import { uploadTheFile } from '@src/controllers/tasksController';
 import { creepInTheTask } from '@src/controllers/tasksController';
 import { getTheUserProfile } from '@src/controllers/userController';
+import { pushTheTempo } from '@src/controllers/pushesController';
+import { pushTheToken } from '@src/controllers/pushesController';
+import { pushTheTempoForAll } from '@src/controllers/pushesController';
 
 function answerHelloKarma(_: IReq, response: IRes) {
   return response.status(HttpStatusCodes.OK).json({ message: 'Hello Karma' });
@@ -27,7 +30,12 @@ async function getAllRoles(_: IReq, response: IRes) {
 async function getAllUsers(_: IReq, response: IRes) {
   const users = await User.findAll({});
 
-  response.status(HttpStatusCodes.OK).json(users);
+  let resultArray = {
+    data: users,
+    cunt: users.length,
+  };
+
+  response.status(HttpStatusCodes.OK).json(resultArray);
 }
 
 function registerUser(request: IReq<SignUpRequest>, response: IRes) {
@@ -58,6 +66,18 @@ function getUserProfile(request: IReq, response: IRes) {
   return getTheUserProfile(request as IAuthReq, response);
 }
 
+function pushPush(request: IReq, response: IRes) {
+  return pushTheTempo(request as IAuthReq, response);
+}
+
+function pushToken(request: IReq, response: IRes) {
+  return pushTheToken(request as IAuthReq, response);
+}
+
+function pushPushForAll(request: IReq, response: IRes) {
+  return pushTheTempoForAll(request as IAuthReq, response);
+}
+
 export default {
   answerHelloKarma,
   getAllRoles,
@@ -68,5 +88,8 @@ export default {
   getTasks,
   uploadFile,
   creepInTask,
-  getUserProfile
+  getUserProfile,
+  pushPush,
+  pushToken,
+  pushPushForAll,
 } as const;

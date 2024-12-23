@@ -25,66 +25,66 @@ const userRouter = Router();
 // Get all users
 userRouter.get(
   Paths.Users.Get,
-  UserRoutes.getAll,
+  UserRoutes.getAll
 );
 
 // Add one user
 userRouter.post(
   Paths.Users.Add,
   validate(['user', User.isUser]),
-  UserRoutes.add,
+  UserRoutes.add
 );
 
 // Update one user
 userRouter.put(
   Paths.Users.Update,
   validate(['user', User.isUser]),
-  UserRoutes.update,
+  UserRoutes.update
 );
 
 // Delete one user
 userRouter.delete(
   Paths.Users.Delete,
   validate(['id', 'number', 'params']),
-  UserRoutes.delete,
+  UserRoutes.delete
 );
 
 const karmaRouter = Router();
 karmaRouter.get(
   Paths.Karma.Hello,
-  KarmaRoutes.answerHelloKarma,
+  KarmaRoutes.answerHelloKarma
 );
 
 karmaRouter.get(
   Paths.Karma.Roles,
-  KarmaRoutes.getAllRoles,
+  KarmaRoutes.getAllRoles
 );
 
 karmaRouter.get(
   Paths.Karma.Users,
-  KarmaRoutes.getAllUsers,
+  KarmaRoutes.getAllUsers
 );
 
 karmaRouter.post(
   Paths.Karma.Register,
   [checkDuplicateUsernameOrEmail, checkRolesExisted], /// in Express's Router second param is array of middlewares
-  KarmaRoutes.registerUser,
+  KarmaRoutes.registerUser
 );
 
 karmaRouter.post(
   Paths.Karma.Login,
-  KarmaRoutes.loginUser,
+  KarmaRoutes.loginUser
 )
 
 karmaRouter.post(
   Paths.Karma.Logout,
-  KarmaRoutes.logoutUser,
+  KarmaRoutes.logoutUser
 )
 
 karmaRouter.get(
   Paths.Karma.Tasks,
   authenticate,
-  KarmaRoutes.getTasks,
+  KarmaRoutes.getTasks
 )
 
 karmaRouter.post(
@@ -102,7 +102,25 @@ karmaRouter.post(
 karmaRouter.get(
   Paths.Karma.User,
   authenticate,
-  KarmaRoutes.getUserProfile,
+  KarmaRoutes.getUserProfile
+);
+
+karmaRouter.post(
+  Paths.Karma.Push,
+  authenticate,
+  KarmaRoutes.pushPush
+);
+
+karmaRouter.post(
+  Paths.Karma.PushToken,
+  authenticate,
+  KarmaRoutes.pushToken
+);
+
+karmaRouter.post(
+  Paths.Karma.PushForAll,
+  authenticate,
+  KarmaRoutes.pushPushForAll
 );
 
 // Add UserRouter
