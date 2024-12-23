@@ -71,6 +71,8 @@ export const pushTheToken = (request: IAuthReq, response: IRes) => {
 /// TODO notification title: requestAny.body.title
 /// TODO notification body: requestAny.body.body
 export const pushTheTempoForAll = (request: IAuthReq, response: IRes) => {
+  console.log('pushTheTempoForAll');
+
   const messaging = getMessaging()
 
   PushToken.findAll().then((pushTokens) => {
