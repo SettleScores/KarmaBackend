@@ -117,7 +117,7 @@ karmaRouter.post(
   KarmaRoutes.pushToken
 );
 
-karmaRouter.post(
+karmaRouter.post<{body: string, title: string}>(
   Paths.Karma.PushForAll,
   authenticate,
   KarmaRoutes.pushPushForAll
