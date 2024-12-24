@@ -5,6 +5,7 @@ import EnvVars from '@src/constants/EnvVars';
 import server from './server';
 
 import https from 'https';
+import http from 'https';
 import fs from 'fs';
 
 // Load the self-signed certificate
@@ -14,10 +15,12 @@ const options = {
 };
 
 // HTTPS server
-const serverprod = https.createServer(options, server);
+const serversecure = https.createServer(options, server);
+const servernotsecure = http.createServer(server);
 // **** Run **** //
 
 const SERVER_START_MSG = ('Express server started on port: ' +
-    EnvVars.Port.toString());
+  EnvVars.Port.toString());
 
-serverprod.listen(EnvVars.Port, () => logger.info(SERVER_START_MSG));
+serversecure.listen(EnvVars.Port, () => logger.info(SERVER_START_MSG));
+servernotsecure.listen(EnvVars.Port, () => logger.info(SERVER_START_MSG));
