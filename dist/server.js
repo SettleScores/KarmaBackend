@@ -64,6 +64,9 @@ postgreConnection_1.default.sync({ force: true }).then(() => {
     populateInitialTasksData();
     populateInitialTasksStatusesData();
     populateInitialPushTokensData();
+    admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+    });
 });
 function populateInitialRanksData() {
     Rank_1.Rank.create({
