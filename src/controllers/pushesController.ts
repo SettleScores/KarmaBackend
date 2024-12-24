@@ -1,7 +1,7 @@
-import EnvVars from "@src/constants/EnvVars";
-import { IRes } from "@src/routes/types/express/misc";
-import { IAuthReq } from "@src/routes/types/types";
-import { getMessaging } from "firebase-admin/messaging";
+import EnvVars from '@src/constants/EnvVars';
+import { IRes } from '@src/routes/types/express/misc';
+import { IAuthReq } from '@src/routes/types/types';
+import { getMessaging } from 'firebase-admin/messaging';
 import { PushToken } from '@src/db/models/PushToken';
 import jwt from 'jsonwebtoken';
 import { extractToken } from '@src/util/generateToken';
@@ -11,7 +11,7 @@ export const pushTheTempo = async (request: IAuthReq, response: IRes) => {
 
   const { requestAny, tokenAfterSplit } = extractToken(request);
 
-  const userId = (jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any).id
+  const userId = (jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any).id;
 
   const pushToken = await PushToken.findOne({
     where: {
@@ -19,7 +19,7 @@ export const pushTheTempo = async (request: IAuthReq, response: IRes) => {
     },
   }) as any;  
 
-  const devicePushToken = pushToken.dataValues.token
+  const devicePushToken = pushToken.dataValues.token;
 
   /// TODO Parse request for message values -- seems to be done
   /// TODO Pass these values from the UI
@@ -38,10 +38,10 @@ export const pushTheTempo = async (request: IAuthReq, response: IRes) => {
     .send(message)
     .then((response) => {
       // Response is a message ID string.
-      console.log("Successfully sent message:", response);
+      console.log('Successfully sent message:', response);
     })
     .catch((error) => {
-      console.log("Error sending message:", error);
+      console.log('Error sending message:', error);
     });
 };
 
@@ -51,7 +51,7 @@ export const pushTheToken = (request: IAuthReq, response: IRes) => {
   try {
     const { requestAny, tokenAfterSplit } = extractToken(request);
 
-    const userId = (jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any).id
+    const userId = (jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any).id;
 
     PushToken.destroy({ where: { userId: userId } });
 
@@ -66,42 +66,35 @@ export const pushTheToken = (request: IAuthReq, response: IRes) => {
   }
 };
 
-/// TODO Parse request for message values
+export const pushTheTempoForAll = (request: IAuthReq<{body: string, title: string}>, response: IRes) => {
+  console.log('pushTheTempoForAll', request.body);
 
-/// TODO notification title: requestAny.body.title
-/// TODO notification body: requestAny.body.body
-export const pushTheTempoForAll = (request: IAuthReq, response: IRes) => {
-  console.log('pushTheTempoForAll');
+  const notificationText = request.body.body;
+  const notificationTitle = request.body.title;
 
-  const messaging = getMessaging()
+  const messaging = getMessaging();
 
   PushToken.findAll().then((pushTokens) => {
     pushTokens.forEach((pushToken) => {
-      console.log("pushTheTempoForAll pushToken: ", pushToken);
+      console.log('pushTheTempoForAll pushToken: ', pushToken);
 
       const message = {
         notification: {
-          title: "KarmaApp",
-          body: "Do you want to cpmplete some task?!",
+          title: notificationTitle,
+          body: notificationText,
         },
         token: pushToken.dataValues.token,
       };
 
       messaging
         .send(message)
-        .then((response) => {
-          // Response is a message ID string.
-          console.log("Successfully sent message:", response);
+        .then((resp) => {
+          console.log('Successfully sent message:', resp);
+          response.status(200).send();
         })
         .catch((error) => {
-          console.log("Error sending message:", error);
+          console.log('Error sending message:', error);
         });
     });
   });
-
-  
-
-  // Send a message to the device corresponding to the provided
-  // registration token.
-  
 };

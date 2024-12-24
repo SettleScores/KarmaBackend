@@ -29,8 +29,6 @@ import { PushToken } from "./db/models/PushToken";
 import cors from "cors";
 import populateInitialMaintenanceData from "./usersPopulation";
 
-import { getMessaging } from "firebase-admin/messaging";
-
 const admin = require("firebase-admin");
 
 const serviceAccount = require(EnvVars.Firebase.PrivateKeyPath);
@@ -122,33 +120,6 @@ sequelize.sync({ force: true }).then(() => {
   populateInitialTasksStatusesData();
 
   populateInitialPushTokensData();
-
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-  });
-
-  console.log('qqq Private key path: ' + EnvVars.Firebase.PrivateKeyPath);
-
-  // This registration token comes from the client FCM SDKs.
-  const registrationToken = "cg6dGx36TNG_f2zE8-LbsX:APA91bHYCNlRu5P_jEKf1MUyvhoWZnRD8GMa4QWlNXdz1-UUBdtvIxFtNMMg8_TUiHLEOd6S368PtHAQQg_S6o9wJLNcrJQdXCa8j2BPJJbyuG0DqAeqvLE"; /// This token goes from device, where it is generated via Firebase SDK
-
-  const message = {
-    notification: {
-      title: "KarmaApp",
-      body: "Do you want to complete the task?",
-    },
-    token: registrationToken,
-  };
-
-  getMessaging()
-    .send(message)
-    .then((response) => {
-      // Response is a message ID string.
-      console.log("Successfully sent message:", response);
-    })
-    .catch((error) => {
-      console.log("Error sending message:", error);
-    });
 });
 
 function populateInitialRanksData() {
