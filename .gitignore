@@ -2,4 +2,4 @@
 **/**/*.log
 .idea/workspace.xml
 uploads/
-dist/
+dist
