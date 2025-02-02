@@ -74,8 +74,8 @@ function pushToken(request: IReq, response: IRes) {
   return pushTheToken(request as IAuthReq, response);
 }
 
-function pushPushForAll(request: IAuthReq<{ body: string, title: string }>, response: IRes) {
-  return pushTheTempoForAll(request, response);
+function pushPushForAll(request: IReq<{body: string, title: string}>, response: IRes) {
+  return pushTheTempoForAll(request as IAuthReq<{body: string, title: string}>, response);
 }
 
 export default {

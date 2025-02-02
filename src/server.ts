@@ -126,6 +126,11 @@ sequelize.sync({ force: true }).then(() => {
   populateInitialTasksStatusesData();
 
   populateInitialPushTokensData();
+
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+  });
+
 });
 
 function populateInitialRanksData() {
