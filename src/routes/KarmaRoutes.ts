@@ -30,7 +30,7 @@ async function getAllRoles(_: IReq, response: IRes) {
 async function getAllUsers(_: IReq, response: IRes) {
   const users = await User.findAll({});
 
-  let resultArray = {
+  const resultArray = {
     data: users,
     cunt: users.length,
   };
@@ -48,7 +48,7 @@ function loginUser(request: IReq<LogInRequest>, response: IRes) {
 
 function logoutUser(request: IReq<LogOutRequest>, response: IRes) {
   return logOutUser(request, response);
-} 
+}
 
 function getTasks(request: IReq, response: IRes) {
   return getAllTasks(request as IAuthReq, response);
@@ -74,8 +74,8 @@ function pushToken(request: IReq, response: IRes) {
   return pushTheToken(request as IAuthReq, response);
 }
 
-function pushPushForAll(request: IReq, response: IRes) {
-  return pushTheTempoForAll(request as IAuthReq, response);
+function pushPushForAll(request: IAuthReq<{ body: string, title: string }>, response: IRes) {
+  return pushTheTempoForAll(request, response);
 }
 
 export default {
