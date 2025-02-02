@@ -33,6 +33,12 @@ const admin = require("firebase-admin");
 
 const serviceAccount = require(EnvVars.Firebase.PrivateKeyPath);
 
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+console.log('qqq Private key path: ' + EnvVars.Firebase.PrivateKeyPath);
+
 // **** Variables **** //
 
 const app = express();
