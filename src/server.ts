@@ -23,15 +23,15 @@ import sequelize from './db/postgreConnection';
 import { Role } from './db/models/Role';
 import { Rank } from './db/models/Rank';
 import { Task } from './db/models/Task';
-import { TaskStatus } from './db/models/TaskStatus';
 import './db/associations';
 import { PushToken } from './db/models/PushToken';
 import cors from 'cors';
 import populateInitialMaintenanceData from './usersPopulation';
 
 import admin from 'firebase-admin';
-import { readFileSync } from 'fs';
-const serviceAccount = readFileSync(EnvVars.Firebase.PrivateKeyPath, 'utf8').trim();
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const serviceAccount = require(EnvVars.Firebase.PrivateKeyPath) as string;
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -126,11 +126,6 @@ sequelize.sync({ force: true }).then(() => {
   populateInitialTasksStatusesData();
 
   populateInitialPushTokensData();
-
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-  });
-
 });
 
 function populateInitialRanksData() {
@@ -274,12 +269,7 @@ function populateInitialTasksData() {
 }
 
 function populateInitialTasksStatusesData() {
-  TaskStatus.create({
-    userId: -1,
-    taskId: -1,
-    fileName: '_',
-    status: 'Unknown',
-  });
+
 }
 
 function populateInitialPushTokensData() {

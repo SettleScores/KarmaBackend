@@ -20,11 +20,13 @@ export default {
     Login: '/login',
     Logout: '/logout',
     Tasks: '/tasks',
+    AllTasks: '/alltasks',
     UploadFile: '/uploadfile',
     CreepInTask: '/creepintask',
     User: '/user',
     Push: '/pushpush',
     PushToken: '/pushtoken',
     PushForAll: '/pushpushall',
+    File: '/files/:filename',
   },
 } as const;

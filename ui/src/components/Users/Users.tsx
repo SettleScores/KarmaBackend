@@ -1,5 +1,6 @@
-import { useContext, useMemo, useState } from 'react';
+import { ReactNode, useContext, useMemo, useState } from 'react';
 import {
+  MRT_Row,
   MaterialReactTable,
   useMaterialReactTable,
   type MRT_ColumnDef,
@@ -7,7 +8,7 @@ import {
   type MRT_PaginationState,
   type MRT_SortingState,
 } from 'material-react-table';
-import { IconButton, Tooltip } from '@mui/material';
+import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   QueryClient,
@@ -16,26 +17,14 @@ import {
   useQuery,
 } from '@tanstack/react-query'; //note: this is TanStack React Query V5
 import { Button, TextField, Stack } from "@mui/material"
-import { getUsers, sendPushForAll } from '../../api/client';
+import { getAllTasks, getUsers, sendPushForAll } from '../../api/client';
 import { AuthContext } from '../../state/authContext';
+import { Task, User, UserApiResponse } from '../../api/types';
+import ApproveDialog from '../ApproveDialog/ApproveDialog';
 
-export type UserApiResponse = {
-  data: Array<User>;
 
-  cunt: number;
-};
 
-type User = {
-  id: number;
-  fullName: string;
-  email: string;
-  gender: string;
-  username: string;
-  password: string;
-  rankId: number;
-  createdAt: string;
-  updatedAt: string;
-};
+
 
 const Example = () => {
   const authToken = useContext(AuthContext) as string;
@@ -50,6 +39,10 @@ const Example = () => {
     pageIndex: 0,
     pageSize: 10,
   });
+
+  const [open, setOpen] = useState(false);
+  const [fileName, setFileName] = useState('');
+  const [description, setDescription] = useState('');
 
   //consider storing this code in a custom hook (i.e useFetchUsers)
   const {
@@ -72,6 +65,13 @@ const Example = () => {
     },
     placeholderData: keepPreviousData, //don't go to 0 rows when refetching or paginating to next page
   });
+
+  const tasksData = useQuery<Task[]>({
+    queryKey: ['tasks'],
+    queryFn: async () => getAllTasks(authToken)
+  });
+
+
 
   const columns = useMemo<MRT_ColumnDef<User>[]>(
     () => [
@@ -119,9 +119,37 @@ const Example = () => {
         accessorKey: 'updatedAt',
         header: 'Updated At',
         size: 150,
+
+
       },
+      ...(tasksData.data || []).map(tx => ({
+        accessorFn: (user: User) => {
+          const task = user.tasks.find(t => t.taskId === tx.id);
+          if (!task) return 'Not started';
+
+          if (task.status === 'Unknown') return 'Not started';
+          if (task.status === 'Done') return 'Completed';
+          if (task.status === 'Working') return 'In progress';
+          return 'Pending';
+        },
+        Cell: ({ row, renderedCellValue }: { row: MRT_Row<User>; renderedCellValue: ReactNode }) => {
+          const task = row.original.tasks.find(t => t.taskId === tx.id);
+          if (task?.status !== 'Pending') return renderedCellValue;
+
+          return <Stack direction="row" alignItems="center" spacing={1}>
+            <Typography>{renderedCellValue}</Typography>
+            <Button onClick={() => {
+              setFileName(task.fileName);
+              setDescription(tx.description);
+              setOpen(true);
+            }}>review</Button>
+          </Stack>
+        },
+        header: tx.description,
+        size: 200
+      }))
     ],
-    [],
+    [tasksData.data, setFileName, setDescription, setOpen],
   );
 
   const table = useMaterialReactTable({
@@ -160,7 +188,10 @@ const Example = () => {
     },
   });
 
-  return <MaterialReactTable table={table} />;
+  return <>
+    <MaterialReactTable table={table} />;
+    <ApproveDialog open={open} handleClose={() => setOpen(false)} filename={fileName} taskDescription={description} accessToken={authToken} />
+  </>
 };
 
 const queryClient = new QueryClient();

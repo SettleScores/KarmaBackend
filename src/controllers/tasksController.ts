@@ -13,9 +13,27 @@ export interface CreepInTaskRequest { /// TODO Use that; and avoid 'any' in cree
   taskId: number;
 }
 
+
+export const getLiterallyAllTasks = async (request: IAuthReq, response: IRes) => {
+  const { tokenAfterSplit } = extractToken(request);
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+  const userId = (jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any).id;
+
+  //TODO check if user is admin
+  console.log(`${userId} is requesting all the tasks`);
+
+  const result = await Task.findAll();
+
+  response.status(200).send({
+    tasks: result,
+  });
+}
+
 export const getAllTasks = async (request: IAuthReq, response: IRes) => { /// заместо 
   const { tokenAfterSplit } = extractToken(request);
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
   const userId = (jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any).id
 
   const literal = `(SELECT DISTINCT \"taskId\" FROM tasks_statuses WHERE \"userId\" = ${userId})`
@@ -35,16 +53,16 @@ export const getAllTasks = async (request: IAuthReq, response: IRes) => { /// з
   });
 };
 
-export const uploadTheFile = (request: IAuthReq, response: IRes) => {
+export const uploadTheFile = (request: IAuthReq<{taskId: number, filename: string}>, response: IRes) => {
   try {
-    const { requestAny, tokenAfterSplit } = extractToken(request);
+    const { tokenAfterSplit } = extractToken(request);
 
-    TaskStatus.destroy({ where: { taskId: requestAny.body.taskId } });
+    TaskStatus.destroy({ where: { taskId: request.body.taskId } });
 
     TaskStatus.create({
       userId: (jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any).id,
-      fileName: requestAny.body.filename,
-      taskId: requestAny.body.taskId,
+      fileName: request.body.filename,
+      taskId: request.body.taskId,
       status: 'Pending',
     });
 
@@ -54,8 +72,8 @@ export const uploadTheFile = (request: IAuthReq, response: IRes) => {
   }
 };
 
-export const creepInTheTask = (request: IAuthReq, response: IRes) => {
-  const { requestAny, tokenAfterSplit } = extractToken(request);
+export const creepInTheTask = (request: IAuthReq<{taskId: number}>, response: IRes) => {
+  const { tokenAfterSplit } = extractToken(request);
 
   const userId: number = (
     jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any
@@ -63,20 +81,20 @@ export const creepInTheTask = (request: IAuthReq, response: IRes) => {
 
   TaskStatus.findOne({
     where: {
-      [Op.and]: [{ userId: userId }, { taskId: requestAny.body.taskId }],
+      [Op.and]: [{ userId: userId }, { taskId: request.body.taskId }],
     },
   }).then((taskStatus) => {
     if (!taskStatus) {
       TaskStatus.create({
         userId: userId,
         fileName: '',
-        taskId: requestAny.body.taskId,
+        taskId: request.body.taskId,
         status: 'Working',
       });
     }
-    response.status(201).json({ 
-      success: `Changed task ${ requestAny.body.taskId} status to \'Working\'`,
-      taskId: requestAny.body.taskId, 
+    response.status(201).json({
+      success: `Changed task ${request.body.taskId} status to \'Working\'`,
+      taskId: request.body.taskId,
     });
   });
 };

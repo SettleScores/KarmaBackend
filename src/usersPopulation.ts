@@ -79,7 +79,7 @@ function populateDummyArseholes() {
 
     TaskStatus.create({
       userId: user.id,
-      fileName: "arsehole1_",
+      fileName: "texting-2.jpg",
       taskId: 7,
       status: "Pending",
     });
@@ -102,8 +102,8 @@ function populateDummyArseholes() {
 
     TaskStatus.create({
       userId: user.id,
-      fileName: "arsehole2_",
-      taskId: 8,
+      fileName: "texting-3.jpg",
+      taskId: 5,
       status: "Pending",
     });
 
@@ -125,8 +125,8 @@ function populateDummyArseholes() {
   }).then((user) => { user.setRoles([1]) 
     TaskStatus.create({
       userId: user.id,
-      fileName: "arsehole3_",
-      taskId: 8,
+      fileName: "playing-partying.mp4",
+      taskId: 6,
       status: "Pending",
     });
 
@@ -171,7 +171,7 @@ function populateDummyArseholes() {
       userId: user.id,
       fileName: "arsehole4_",
       taskId: 6,
-      status: "Pending",
+      status: "Working",
     });
   });
 
@@ -194,7 +194,7 @@ function populateDummyArseholes() {
       userId: user.id,
       fileName: "arsehole5_",
       taskId: 8,
-      status: "Pending",
+      status: "Working",
     });
   });
 
@@ -217,7 +217,7 @@ function populateDummyArseholes() {
       userId: user.id,
       fileName: "arsehole6_",
       taskId: 8,
-      status: "Pending",
+      status: "Working",
     });
 
     TaskStatus.create({
@@ -240,14 +240,14 @@ function populateDummyArseholes() {
       userId: user.id,
       fileName: "arsehole7",
       taskId: 6,
-      status: "Pending",
+      status: "Working",
     });
 
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole7__",
       taskId: 5,
-      status: "Pending",
+      status: "Working",
     });
   });
 
@@ -263,7 +263,7 @@ function populateDummyArseholes() {
       userId: user.id,
       fileName: "arsehole8__",
       taskId: 2,
-      status: "Pending",
+      status: "Working",
     });
 
     TaskStatus.create({
@@ -286,7 +286,7 @@ function populateDummyArseholes() {
       userId: user.id,
       fileName: "arsehole9__",
       taskId: 2,
-      status: "Pending",
+      status: "Working",
     });
 
     TaskStatus.create({
@@ -300,7 +300,7 @@ function populateDummyArseholes() {
       userId: user.id,
       fileName: "arsehole9__",
       taskId: 2,
-      status: "Pending",
+      status: "Working",
     });
 
     TaskStatus.create({
@@ -323,7 +323,7 @@ function populateDummyArseholes() {
       userId: user.id,
       fileName: "arsehole10",
       taskId: 11,
-      status: "Pending",
+      status: "Working",
     });
 
     TaskStatus.create({
@@ -360,7 +360,7 @@ function populateDummyArseholes() {
       userId: user.id,
       fileName: "arsehole11_",
       taskId: 5,
-      status: "Pending",
+      status: "Working",
     });
   });
 
@@ -376,7 +376,7 @@ function populateDummyArseholes() {
       userId: user.id,
       fileName: "arsehole12",
       taskId: 4,
-      status: "Pending",
+      status: "Working",
     });
 
     TaskStatus.create({
@@ -399,7 +399,7 @@ function populateDummyArseholes() {
       userId: user.id,
       fileName: "arsehole13",
       taskId: 4,
-      status: "Pending",
+      status: "Working",
     });
 
     TaskStatus.create({
@@ -600,7 +600,7 @@ function populateDummyArseholes() {
 
     TaskStatus.create({
       userId: user.id,
-      fileName: "arsehole20__",
+      fileName: "texting-1.png",
       taskId: 9,
       status: "Pending",
     });
