@@ -199,7 +199,7 @@ const queryClient = new QueryClient();
 const SendPushForAllButt = () => {
   const authToken = useContext(AuthContext) as string;
   const [tokenText, setTokenText] = useState('');
-  return <Stack spacing={2}>
+  return <Stack spacing={2} sx={{ maxWidth: '1200px', margin: '0 auto' }}  >
     <TextField value={tokenText} onChange={(e) => setTokenText(e.target.value)} />
     <Button onClick={() => { sendPushForAll(authToken, 'KarmaApp', tokenText) }}>Send Push For All</Button>
   </Stack>
