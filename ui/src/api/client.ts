@@ -3,10 +3,9 @@ import {
     type MRT_PaginationState,
     type MRT_SortingState,
 } from 'material-react-table';
-import { type UserApiResponse } from "../components/Users/Users.ts";
-import { Task, TaskStatus } from './types.ts';
+import { Task, TaskStatus,UserApiResponse } from './types.ts';
 
-export const baseUrl = 'http://localhost:3000/';
+export const baseUrl = 'https://161.35.3.11:8081/';
 
 export const login = (username: string | null, password: string | null): Promise<string> => {
     return fetch(`${baseUrl}api/karma/login`, {

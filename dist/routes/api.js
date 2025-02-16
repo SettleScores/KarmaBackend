@@ -1,0 +1,45 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const jet_validator_1 = __importDefault(require("jet-validator"));
+const Paths_1 = __importDefault(require("../constants/Paths"));
+const User_1 = __importDefault(require("@src/models/User"));
+const UserRoutes_1 = __importDefault(require("./UserRoutes"));
+const KarmaRoutes_1 = __importDefault(require("@src/routes/KarmaRoutes"));
+const verifySignUp_1 = require("@src/middleware/verifySignUp");
+const authenticateToken_1 = require("@src/middleware/authenticateToken");
+const prepareFileUploader_1 = require("@src/middleware/prepareFileUploader");
+const apiRouter = (0, express_1.Router)(), validate = (0, jet_validator_1.default)();
+const userRouter = (0, express_1.Router)();
+userRouter.get(Paths_1.default.Users.Get, UserRoutes_1.default.getAll);
+userRouter.post(Paths_1.default.Users.Add, validate(['user', User_1.default.isUser]), UserRoutes_1.default.add);
+userRouter.put(Paths_1.default.Users.Update, validate(['user', User_1.default.isUser]), UserRoutes_1.default.update);
+userRouter.delete(Paths_1.default.Users.Delete, validate(['id', 'number', 'params']), UserRoutes_1.default.delete);
+const karmaRouter = (0, express_1.Router)();
+karmaRouter.get(Paths_1.default.Karma.Hello, KarmaRoutes_1.default.answerHelloKarma);
+karmaRouter.get(Paths_1.default.Karma.Roles, KarmaRoutes_1.default.getAllRoles);
+karmaRouter.get(Paths_1.default.Karma.Users, KarmaRoutes_1.default.getAllUsers);
+karmaRouter.post(Paths_1.default.Karma.Register, [verifySignUp_1.checkDuplicateUsernameOrEmail, verifySignUp_1.checkRolesExisted], KarmaRoutes_1.default.registerUser);
+karmaRouter.post(Paths_1.default.Karma.Login, KarmaRoutes_1.default.loginUser);
+karmaRouter.post(Paths_1.default.Karma.Logout, KarmaRoutes_1.default.logoutUser);
+karmaRouter.get(Paths_1.default.Karma.Tasks, authenticateToken_1.authenticate, authType(KarmaRoutes_1.default.getTasks));
+karmaRouter.get(Paths_1.default.Karma.AllTasks, authenticateToken_1.authenticate, authType(KarmaRoutes_1.default.getAllTasks));
+karmaRouter.post(Paths_1.default.Karma.UploadFile, [authenticateToken_1.authenticate, (0, prepareFileUploader_1.prepareLoader)()], authType(KarmaRoutes_1.default.uploadFile));
+karmaRouter.post(Paths_1.default.Karma.CreepInTask, authenticateToken_1.authenticate, authType(KarmaRoutes_1.default.creepInTask));
+karmaRouter.get(Paths_1.default.Karma.User, authenticateToken_1.authenticate, authType(KarmaRoutes_1.default.getUserProfile));
+karmaRouter.post(Paths_1.default.Karma.ValidateTaskStatus, authenticateToken_1.authenticate, authType(KarmaRoutes_1.default.validateTask));
+karmaRouter.post(Paths_1.default.Karma.Push, authenticateToken_1.authenticate, authType(KarmaRoutes_1.default.pushPush));
+karmaRouter.post(Paths_1.default.Karma.PushToken, authenticateToken_1.authenticate, authType(KarmaRoutes_1.default.pushToken));
+karmaRouter.post(Paths_1.default.Karma.PushForAll, authenticateToken_1.authenticate, authType(KarmaRoutes_1.default.pushPushForAll));
+karmaRouter.get(Paths_1.default.Karma.File, authenticateToken_1.authenticate, authType(KarmaRoutes_1.default.downloadFile));
+karmaRouter.get(Paths_1.default.Karma.Video, authenticateToken_1.authenticate, authType(KarmaRoutes_1.default.getVideoUrl));
+karmaRouter.get(Paths_1.default.Karma.Stream, KarmaRoutes_1.default.streamVideo);
+apiRouter.use(Paths_1.default.Users.Base, userRouter);
+apiRouter.use(Paths_1.default.Karma.Base, karmaRouter);
+function authType(handler) {
+    return (req, res) => handler(req, res);
+}
+exports.default = apiRouter;
