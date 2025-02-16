@@ -21,12 +21,10 @@ export const generateLogoutTokenFromToken = (accessToken: string) => {
   return generateTokenFromUserId(decoded.id, 0)
 };
 
-export const extractToken = (request: IAuthReq) => {
+export const extractToken = (request: IAuthReq<any>) => {
   const token = request.headers.authorization || ''; /// subtle nuance; if undefined or null replace with empty string ''
 
   const tokenAfterSplit = token.split(' ')[1];
-
-  const requestAny = request as any; /// TODO it would be fino if it was possible to do without 'any'
   
-  return { requestAny, tokenAfterSplit };
+  return { tokenAfterSplit };
 }

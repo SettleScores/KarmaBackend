@@ -5,11 +5,13 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
-  HasManyGetAssociationsMixin
+  HasManyGetAssociationsMixin,
+  HasManyCreateAssociationMixin
 } from 'sequelize';
 
 import sequelize from '../postgreConnection';
 import { Role } from './Role';
+import { TaskStatus } from './TaskStatus';
 
 export class User extends Model<
   InferAttributes<User>,
@@ -26,6 +28,10 @@ export class User extends Model<
   public declare updatedAt: CreationOptional<Date>;
   public declare setRoles: BelongsToManySetAssociationsMixin<Role, number>;
   public declare getRoles: HasManyGetAssociationsMixin<Role>;
+
+  // Task associations
+  public declare getTasks: HasManyGetAssociationsMixin<TaskStatus>;
+  public declare createTask: HasManyCreateAssociationMixin<TaskStatus>;
 }
 
 User.init(

@@ -6,10 +6,10 @@ import { PushToken } from '@src/db/models/PushToken';
 import jwt from 'jsonwebtoken';
 import { extractToken } from '@src/util/generateToken';
 
-export const pushTheTempo = async (request: IAuthReq, response: IRes) => {
+export const pushTheTempo = async (request: IAuthReq<{title: string, body: any}>, response: IRes) => {
   console.log('qqq Private key path: ' + EnvVars.Firebase.PrivateKeyPath);
 
-  const { requestAny, tokenAfterSplit } = extractToken(request);
+  const { tokenAfterSplit } = extractToken(request);
 
   const userId = (jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any).id;
 
@@ -26,8 +26,8 @@ export const pushTheTempo = async (request: IAuthReq, response: IRes) => {
 
   const message = {
     notification: {
-      title: requestAny.body.title,
-      body: requestAny.body.body,
+      title: request.body.title,
+      body: request.body.body,
     },
     token: devicePushToken,
   };
@@ -45,11 +45,11 @@ export const pushTheTempo = async (request: IAuthReq, response: IRes) => {
     });
 };
 
-export const pushTheToken = (request: IAuthReq, response: IRes) => {
+export const pushTheToken = (request: IAuthReq<{token: string}>, response: IRes) => {
   console.log('qqq pushTheToken');
 
   try {
-    const { requestAny, tokenAfterSplit } = extractToken(request);
+    const { tokenAfterSplit } = extractToken(request);
 
     const userId = (jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any).id;
 
@@ -57,7 +57,7 @@ export const pushTheToken = (request: IAuthReq, response: IRes) => {
 
     PushToken.create({
       userId: userId,
-      token: requestAny.body.token,
+      token: request.body.token,
     });
 
     response.status(200).json({ success: 'push token stored successful' });
