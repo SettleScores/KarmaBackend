@@ -101,7 +101,7 @@ karmaRouter.post(
   authType(KarmaRoutes.uploadFile),
 );
 
-karmaRouter.post<{ taskId: string;}>(
+karmaRouter.post<{ taskId: string; }>(
   Paths.Karma.CreepInTask,
   authenticate,
   authType(KarmaRoutes.creepInTask),
@@ -111,6 +111,13 @@ karmaRouter.get(
   Paths.Karma.User,
   authenticate,
   authType(KarmaRoutes.getUserProfile),
+);
+
+//FIXME super weird type error if I put correct type
+karmaRouter.post<{ body: string }>(
+  Paths.Karma.ValidateTaskStatus,
+  authenticate,
+  authType(KarmaRoutes.validateTask),
 );
 
 karmaRouter.post<{ title: string; body: any; }>(
@@ -135,6 +142,17 @@ karmaRouter.get(
   Paths.Karma.File,
   authenticate,
   authType(KarmaRoutes.downloadFile),
+);
+
+karmaRouter.get(
+  Paths.Karma.Video,
+  authenticate,
+  authType(KarmaRoutes.getVideoUrl),
+);
+
+karmaRouter.get(
+  Paths.Karma.Stream,
+  KarmaRoutes.streamVideo,
 );
 
 // Add UserRouter

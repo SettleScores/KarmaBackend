@@ -23,10 +23,13 @@ export default {
     AllTasks: '/alltasks',
     UploadFile: '/uploadfile',
     CreepInTask: '/creepintask',
+    ValidateTaskStatus:'/taskstatus/:id/validate',
     User: '/user',
     Push: '/pushpush',
     PushToken: '/pushtoken',
     PushForAll: '/pushpushall',
     File: '/files/:filename',
+    Video: '/video/:filename',
+    Stream: '/stream/:id',
   },
 } as const;

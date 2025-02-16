@@ -21,7 +21,7 @@ export type TaskStatus = {
     userId: number;
     taskId: number;
     fileName: string;
-    status: 'Unknown'| 'Working'| 'Pending'| 'Done';
+    status: 'Unknown' | 'Working' | 'Pending' | 'Done' | 'Rejected';
     createdAt: string;
     updatedAt: string;
 }

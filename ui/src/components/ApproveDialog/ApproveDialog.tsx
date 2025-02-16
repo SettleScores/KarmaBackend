@@ -7,58 +7,78 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-import { baseUrl } from '../../api/client';
+import { baseUrl, getVideoUrl } from '../../api/client';
 
 import DocViewer from "@cyntler/react-doc-viewer";
 import "@cyntler/react-doc-viewer/dist/index.css";
+import { Box } from '@mui/material';
+import { Task, TaskStatus } from '../../api/types';
 
-export default function FormDialog({ open, handleClose, accessToken, filename, taskDescription }: { filename: string; accessToken: string; taskDescription: string, open: boolean, handleClose: () => void }) {
+function isVideo(fileName?: string) {
+    if (!fileName) return false;
+    return fileName.includes('mp4');
+}
 
-    const file = { uri: `${baseUrl}api/karma/files/${filename}` }
+export default function FormDialog({ open, handleClose, handleValidate, accessToken, task }: { task: TaskStatus & Task | null, accessToken: string; open: boolean; handleClose: () => void; handleValidate: (approve: boolean, rejectReason?: string) => void }) {
+    const [videoUrl, setVideoUrl] = React.useState('');
+
+    React.useEffect(() => {
+        if (isVideo(task?.fileName)) {
+            getVideoUrl(accessToken, task!.fileName).then(({ url }) => setVideoUrl(url));
+        } else {
+            setVideoUrl('');
+        }
+    }, [task, accessToken]);
 
     return (
         <React.Fragment>
             <Dialog
                 open={open}
                 onClose={handleClose}
-                PaperProps={{
-                    component: 'form',
-                    onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                        event.preventDefault();
-                        const formData = new FormData(event.currentTarget);
-                        const formJson = Object.fromEntries((formData as any).entries());
-                        const email = formJson.email;
-                        console.log(email);
-                        handleClose();
-                    },
-                }}
             >
                 <DialogTitle>Review task</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        {taskDescription}
+                        {task?.description}
                     </DialogContentText>
+                    <Box maxHeight={400} overflow='auto'>
+                        <DocViewer documents={[{ uri: videoUrl || `${baseUrl}api/karma/files/${task?.fileName}` }]} config={{ header: { disableFileName: true } }} prefetchMethod="GET" requestHeaders={{ 'Authorization': `Bearer ${accessToken}` }} />
+                    </Box>
 
-                    <DocViewer documents={[file]} prefetchMethod="GET" requestHeaders={{ 'Authorization': `Bearer ${accessToken}` }} />
-
-                    <TextField
-                        autoFocus
-                        required
-                        margin="dense"
-                        id="reason"
-                        name="reason"
-                        label="Reject Reason"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                    />
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button type="submit">Approve</Button>
-                    <Button type="submit">Reject</Button>
-                </DialogActions>
+                <DialogAct handleClose={handleClose} handleValidate={handleValidate} />
             </Dialog>
         </React.Fragment>
     );
+}
+
+function DialogAct({ handleClose, handleValidate }: { handleClose: () => void; handleValidate: (approve: boolean, rejectReason?: string) => void; }) {
+    const [rejectReason, setRejectReason] = React.useState('');
+
+    return <>
+        <DialogContent>
+            <TextField
+                autoFocus
+                margin="dense"
+                id="reason"
+                name="reason"
+                label="Reject Reason"
+                type="text"
+                fullWidth
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                variant="standard"
+            />
+        </DialogContent>
+
+        <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={() => {
+                handleValidate(true);
+            }}>Approve</Button>
+            <Button onClick={() => {
+                handleValidate(false, rejectReason);
+            }} disabled={rejectReason.length < 5}>Reject</Button>
+        </DialogActions>
+    </>
 }

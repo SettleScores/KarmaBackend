@@ -4,9 +4,9 @@ import {
     type MRT_SortingState,
 } from 'material-react-table';
 import { type UserApiResponse } from "../components/Users/Users.ts";
-import { Task } from './types.ts';
+import { Task, TaskStatus } from './types.ts';
 
-export const baseUrl = 'http://localhost:3000/'
+export const baseUrl = 'http://localhost:3000/';
 
 export const login = (username: string | null, password: string | null): Promise<string> => {
     return fetch(`${baseUrl}api/karma/login`, {
@@ -93,7 +93,6 @@ export const getAllTasks = async (accessToken: string): Promise<Task[]> => {
 }
 
 export const getFile = async (accessToken: string, filename: string): Promise<string> => {
-    alert(filename);
     const response = await fetch(`${baseUrl}api/karma/files/${filename}`, {
         headers: {
             authorization: "Bearer " + accessToken,
@@ -101,6 +100,40 @@ export const getFile = async (accessToken: string, filename: string): Promise<st
     })
 
     const res = await response.text();
-
     return res;
 }
+
+export const validateTask = async (accessToken: string, taskStatusId: number, approve: boolean, reason?: string): Promise<{ id: number, status: TaskStatus["status"] }> => {
+    const response = await fetch(`${baseUrl}api/karma/taskstatus/${taskStatusId}/validate`, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'authorization': 'Bearer ' + accessToken
+        },
+        body: JSON.stringify({
+            approve,
+            rejectReason: reason,
+        })
+    })
+
+    const { id, status } = await response.json();
+
+    return { id, status };
+}
+
+export const getVideoUrl = async (accessToken: string, filename: string): Promise<{ url: string, expireInMiliseconds: number }> => {
+    const response = await fetch(`${baseUrl}api/karma/video/${filename}`, {
+        headers: {
+            authorization: "Bearer " + accessToken,
+        },
+    })
+
+    const { url, expireInMiliseconds } = await response.json();
+
+    const fullVideoUrl = `${baseUrl}api/karma/stream/${url}`;
+
+
+    return { url: fullVideoUrl, expireInMiliseconds };
+}
+

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { IAuthReq, IReq } from '@src/routes/types/types';
 import { IRes } from '@src/routes/types/express/misc';
 import { Task } from '@src/db/models/Task';
@@ -7,7 +8,8 @@ import EnvVars from '@src/constants/EnvVars';
 import { Op } from 'sequelize';
 import { Sequelize } from 'sequelize';
 import { extractToken } from '@src/util/generateToken';
-
+import { PushToken } from '@src/db/models/PushToken';
+import { getMessaging } from 'firebase-admin/messaging';
 
 export interface CreepInTaskRequest { /// TODO Use that; and avoid 'any' in creepInTheTask
   taskId: number;
@@ -53,14 +55,12 @@ export const getAllTasks = async (request: IAuthReq, response: IRes) => { /// з
   });
 };
 
-export const uploadTheFile = (request: IAuthReq<{taskId: number, filename: string}>, response: IRes) => {
+export const uploadTheFile = (request: IAuthReq<{ taskId: number, filename: string }>, response: IRes) => {
   try {
-    const { tokenAfterSplit } = extractToken(request);
-
     TaskStatus.destroy({ where: { taskId: request.body.taskId } });
 
     TaskStatus.create({
-      userId: (jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any).id,
+      userId: request.user.id,
       fileName: request.body.filename,
       taskId: request.body.taskId,
       status: 'Pending',
@@ -72,12 +72,52 @@ export const uploadTheFile = (request: IAuthReq<{taskId: number, filename: strin
   }
 };
 
-export const creepInTheTask = (request: IAuthReq<{taskId: number}>, response: IRes) => {
-  const { tokenAfterSplit } = extractToken(request);
+export const validateTask = (request: IAuthReq<{ approve: boolean; rejectReason?: string }>, response: IRes) => {
+  const id = request.params.id;
+  const approve = request.body.approve;
+  const reason = request.body.rejectReason;
 
-  const userId: number = (
-    jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any
-  ).id;
+  if (!Number.isInteger(Number(id))) {
+    return response.status(401).send('Invalid id value');
+  }
+
+  TaskStatus.update({
+    status: approve ? 'Done' : 'Rejected',
+    rejectReason: request.body.rejectReason,
+  }, {
+    where: {
+      id: id,
+    },
+    returning: true,
+  }).then(([_, obj]) => {
+    response.status(200).send(obj[0]);
+
+    PushToken.findOne({
+      where: {
+        userId: request.user.id,
+      },
+    }).then(token => {
+      const devicePushToken = token?.dataValues.token;
+
+      if (!devicePushToken) return;
+
+      const message = {
+        notification: {
+          title: 'Your task is ' + (approve ? 'approved' : 'rejected'),
+          body: approve ? 'Keep it up!' : reason,
+        },
+        token: devicePushToken,
+      };
+
+      getMessaging().send(message);
+    }).catch(err => console.error(err));
+  }).catch(err => {
+    response.status(500).send(err);
+  });
+};
+
+export const creepInTheTask = (request: IAuthReq<{ taskId: number }>, response: IRes) => {
+  const userId = request.user.id;
 
   TaskStatus.findOne({
     where: {
@@ -93,7 +133,7 @@ export const creepInTheTask = (request: IAuthReq<{taskId: number}>, response: IR
       });
     }
     response.status(201).json({
-      success: `Changed task ${request.body.taskId} status to \'Working\'`,
+      success: `Changed task ${request.body.taskId} status to 'Working'`,
       taskId: request.body.taskId,
     });
   });

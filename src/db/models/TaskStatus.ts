@@ -10,12 +10,6 @@ import {
 import sequelize from '../postgreConnection';
 import { User } from './User';
 
-export enum TaskStatusType { /// TODO Use or RremoOve
-  Huj = 'Хуй',
-  Pizda = 'Пизда',
-  Ggurda = 'Джигурда',
-}
-
 export class TaskStatus extends Model<
   InferAttributes<TaskStatus>,
   InferCreationAttributes<TaskStatus>
@@ -24,7 +18,8 @@ export class TaskStatus extends Model<
   public declare userId: ForeignKey<User['id']>;
   public declare taskId: number;
   public declare fileName: string;
-  public declare status: 'Unknown' | 'Working' | 'Pending' | 'Done';
+  public declare status: 'Unknown' | 'Working' | 'Pending' | 'Done' | 'Rejected';
+  public declare rejectReason: CreationOptional<string>;
 }
 
 TaskStatus.init(
@@ -52,8 +47,12 @@ TaskStatus.init(
       allowNull: false,
     },
     status: {
-      type: new DataTypes.ENUM('Unknown', 'Working', 'Pending', 'Done'),
+      type: new DataTypes.ENUM('Unknown', 'Working', 'Pending', 'Done', 'Rejected'),
       allowNull: false,
+    },
+    rejectReason: {
+      type: new DataTypes.STRING,
+      allowNull: true,
     },
   },
   {
