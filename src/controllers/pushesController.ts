@@ -49,20 +49,23 @@ export const pushTheTempo = async (request: IAuthReq<{ title: string, body: any 
 export const pushTheToken = (request: IAuthReq<{ token: string }>, response: IRes) => {
   console.log('qqq pushTheToken');
 
-  try {
-    const { tokenAfterSplit } = extractToken(request);
+  const userId = request.user.id;
+  const token = request?.body?.token;
 
-    const userId = (jwt.verify(tokenAfterSplit, EnvVars.Jwt.Secret) as any).id;
+  try {
+    logger.info(`Saving push token for the user: ${userId}|token:${token}`);
 
     PushToken.destroy({ where: { userId: userId } });
 
     PushToken.create({
-      userId: userId,
-      token: request.body.token,
+      userId,
+      token
     });
 
     response.status(200).json({ success: 'push token stored successful' });
   } catch (error) {
+    logger.err(`Error saving token ${userId}|${token}`);
+    logger.err(error);
     response.status(500).json({ error: error });
   }
 };
