@@ -47,18 +47,22 @@ const pushTheTempo = (request, response) => __awaiter(void 0, void 0, void 0, fu
 });
 exports.pushTheTempo = pushTheTempo;
 const pushTheToken = (request, response) => {
+    var _a;
     console.log('qqq pushTheToken');
+    const userId = request.user.id;
+    const token = (_a = request === null || request === void 0 ? void 0 : request.body) === null || _a === void 0 ? void 0 : _a.token;
     try {
-        const { tokenAfterSplit } = (0, generateToken_1.extractToken)(request);
-        const userId = jsonwebtoken_1.default.verify(tokenAfterSplit, EnvVars_1.default.Jwt.Secret).id;
+        jet_logger_1.default.info(`Saving push token for the user: ${userId}|token:${token}`);
         PushToken_1.PushToken.destroy({ where: { userId: userId } });
         PushToken_1.PushToken.create({
-            userId: userId,
-            token: request.body.token,
+            userId,
+            token
         });
         response.status(200).json({ success: 'push token stored successful' });
     }
     catch (error) {
+        jet_logger_1.default.err(`Error saving token ${userId}|${token}`);
+        jet_logger_1.default.err(error);
         response.status(500).json({ error: error });
     }
 };
