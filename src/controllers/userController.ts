@@ -9,7 +9,7 @@ import EnvVars from '@src/constants/EnvVars';
 
 
 export const getTheUserProfile = async (request: IAuthReq, response: IRes) => {
-  const token = request.headers.authorization || '' /// subtle nuance; if undefined or null replace with empty string ''
+  const token = request.headers.authorization || '';
   
   const tokenAfterSplit = token.split(' ')[1];
 
@@ -23,7 +23,7 @@ export const getTheUserProfile = async (request: IAuthReq, response: IRes) => {
 
   const foundUserRank = await Rank.findOne({ where: { id: foundUser.rankId } });
 
-  const foundUserRankName = foundUserRank?.name
+  const foundUserRankName = foundUserRank?.name;
 
   const workingTasksStatuses = await TaskStatus.findAll({
     where: {
