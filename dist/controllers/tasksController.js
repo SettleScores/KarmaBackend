@@ -22,6 +22,7 @@ const sequelize_2 = require("sequelize");
 const generateToken_1 = require("@src/util/generateToken");
 const PushToken_1 = require("@src/db/models/PushToken");
 const messaging_1 = require("firebase-admin/messaging");
+const jet_logger_1 = __importDefault(require("jet-logger"));
 const getLiterallyAllTasks = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     const { tokenAfterSplit } = (0, generateToken_1.extractToken)(request);
     const userId = jsonwebtoken_1.default.verify(tokenAfterSplit, EnvVars_1.default.Jwt.Secret).id;
@@ -68,11 +69,12 @@ const validateTask = (request, response) => {
     const id = request.params.id;
     const approve = request.body.approve;
     const reason = request.body.rejectReason;
+    const newStatus = approve ? 'Done' : 'Rejected';
     if (!Number.isInteger(Number(id))) {
         return response.status(401).send('Invalid id value');
     }
     TaskStatus_1.TaskStatus.update({
-        status: approve ? 'Done' : 'Rejected',
+        status: newStatus,
         rejectReason: request.body.rejectReason,
     }, {
         where: {
@@ -80,13 +82,16 @@ const validateTask = (request, response) => {
         },
         returning: true,
     }).then(([_, obj]) => {
+        jet_logger_1.default.info('Task status for user ' + request.user.id + ' updated: ' + newStatus);
         response.status(200).send(obj[0]);
+        jet_logger_1.default.info('Looking for a push token');
         PushToken_1.PushToken.findOne({
             where: {
                 userId: request.user.id,
             },
         }).then(token => {
             const devicePushToken = token === null || token === void 0 ? void 0 : token.dataValues.token;
+            jet_logger_1.default.info('The token is: ' + devicePushToken);
             if (!devicePushToken)
                 return;
             const message = {
@@ -96,8 +101,9 @@ const validateTask = (request, response) => {
                 },
                 token: devicePushToken,
             };
+            jet_logger_1.default.info('Sending the message: ________' + JSON.stringify(message));
             (0, messaging_1.getMessaging)().send(message);
-        }).catch(err => console.error(err));
+        }).catch(err => jet_logger_1.default.err(err));
     }).catch(err => {
         response.status(500).send(err);
     });

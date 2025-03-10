@@ -14,9 +14,9 @@ const prepareLoader = () => {
         filename: function (request, file, cb) {
             const randomUuid = (0, uuid_1.v4)();
             const dot = '.';
+            request.body.filename = randomUuid + dot + file.originalname.split(dot)[1];
             cb(null, randomUuid + dot + file.originalname.split(dot)[1]);
-            request.body.filename = randomUuid;
-        }
+        },
     });
     const upload = (0, multer_1.default)({ storage: storage });
     return upload.single('file');

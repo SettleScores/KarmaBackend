@@ -48,11 +48,29 @@ const getTheUserProfile = (request, response) => __awaiter(void 0, void 0, void 
         },
     });
     const pendingTasksCount = pendingTasksStatuses.length;
+    const completedTasksCount = yield TaskStatus_1.TaskStatus.count({
+        where: {
+            [sequelize_1.Op.and]: [
+                { userId: foundUser.id },
+                { status: 'Done' },
+            ],
+        },
+    });
+    const rejectedTasksCount = yield TaskStatus_1.TaskStatus.count({
+        where: {
+            [sequelize_1.Op.and]: [
+                { userId: foundUser.id },
+                { status: 'Rejected' },
+            ],
+        },
+    });
     return response.status(200).send({
         username: foundUser.username,
         rankName: foundUserRankName,
         working: workingTasksCount,
         pending: pendingTasksCount,
+        completed: completedTasksCount,
+        rejected: rejectedTasksCount,
     });
 });
 exports.getTheUserProfile = getTheUserProfile;

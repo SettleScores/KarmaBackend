@@ -1,10 +1,25 @@
 const fs = require('fs-extra');
 const childProcess = require('child_process');
 
+
+const oldFile = 'dist/index.js';
+const newFile = 'dist/indexprod.js';
+
 remove('./dist/')
   .then(() => copy('./src/public', './dist/public'))
   .then(() => copy('./src/views', './dist/views'))
   .then(() => exec('tsc --build tsconfig.prod.json', './'))
+  .then(() => {
+    try {
+      console.log('Renaming build file');
+      fs.unlinkSync(oldFile);
+      fs.renameSync(newFile, oldFile);
+      console.log('File renamed successfully!');
+      return Promise.resolve();
+    } catch (err) {
+      return Promise.reject(err)
+    }
+  })
   .catch(err => console.log(err))
   .finally(() => console.log('Build script finished'));
 

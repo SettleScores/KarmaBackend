@@ -18,6 +18,7 @@ const messaging_1 = require("firebase-admin/messaging");
 const PushToken_1 = require("@src/db/models/PushToken");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const generateToken_1 = require("@src/util/generateToken");
+const jet_logger_1 = __importDefault(require("jet-logger"));
 const pushTheTempo = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('qqq Private key path: ' + EnvVars_1.default.Firebase.PrivateKeyPath);
     const { tokenAfterSplit } = (0, generateToken_1.extractToken)(request);
@@ -38,10 +39,10 @@ const pushTheTempo = (request, response) => __awaiter(void 0, void 0, void 0, fu
     (0, messaging_1.getMessaging)()
         .send(message)
         .then((response) => {
-        console.log('Successfully sent message:', response);
+        jet_logger_1.default.info('Successfully sent message: ' + response);
     })
         .catch((error) => {
-        console.log('Error sending message:', error);
+        jet_logger_1.default.err('Error sending message: ' + error);
     });
 });
 exports.pushTheTempo = pushTheTempo;
@@ -63,13 +64,14 @@ const pushTheToken = (request, response) => {
 };
 exports.pushTheToken = pushTheToken;
 const pushTheTempoForAll = (request, response) => {
-    console.log('pushTheTempoForAll', request.body);
+    jet_logger_1.default.info('pushTheTempoForAll      ___' + JSON.stringify(request.body));
     const notificationText = request.body.body;
     const notificationTitle = request.body.title;
     const messaging = (0, messaging_1.getMessaging)();
     PushToken_1.PushToken.findAll().then((pushTokens) => {
         pushTokens.forEach((pushToken) => {
-            console.log('pushTheTempoForAll pushToken: ', pushToken);
+            var _a;
+            jet_logger_1.default.info('pushTheTempoForAll pushToken: ' + ((_a = pushToken === null || pushToken === void 0 ? void 0 : pushToken.dataValues) === null || _a === void 0 ? void 0 : _a.token));
             const message = {
                 notification: {
                     title: notificationTitle,
@@ -80,11 +82,12 @@ const pushTheTempoForAll = (request, response) => {
             messaging
                 .send(message)
                 .then((resp) => {
-                console.log('Successfully sent message:', resp);
+                jet_logger_1.default.info('Successfully sent message: ' + resp);
                 response.status(200).send();
             })
                 .catch((error) => {
-                console.log('Error sending message:', error);
+                jet_logger_1.default.err('Error sending message');
+                jet_logger_1.default.err(error);
             });
         });
     });
