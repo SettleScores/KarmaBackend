@@ -10,11 +10,11 @@ import { Sequelize } from 'sequelize';
 import { extractToken } from '@src/util/generateToken';
 import { PushToken } from '@src/db/models/PushToken';
 import { getMessaging } from 'firebase-admin/messaging';
+import logger from 'jet-logger';
 
 export interface CreepInTaskRequest { /// TODO Use that; and avoid 'any' in creepInTheTask
   taskId: number;
 }
-
 
 export const getLiterallyAllTasks = async (request: IAuthReq, response: IRes) => {
   const { tokenAfterSplit } = extractToken(request);
@@ -76,13 +76,14 @@ export const validateTask = (request: IAuthReq<{ approve: boolean; rejectReason?
   const id = request.params.id;
   const approve = request.body.approve;
   const reason = request.body.rejectReason;
+  const newStatus = approve ? 'Done' : 'Rejected'
 
   if (!Number.isInteger(Number(id))) {
     return response.status(401).send('Invalid id value');
   }
 
   TaskStatus.update({
-    status: approve ? 'Done' : 'Rejected',
+    status: newStatus,
     rejectReason: request.body.rejectReason,
   }, {
     where: {
@@ -90,7 +91,11 @@ export const validateTask = (request: IAuthReq<{ approve: boolean; rejectReason?
     },
     returning: true,
   }).then(([_, obj]) => {
+    logger.info('Task status for user ' + request.user.id + ' updated: ' + newStatus)
+
     response.status(200).send(obj[0]);
+
+    logger.info('Looking for a push token');
 
     PushToken.findOne({
       where: {
@@ -98,6 +103,8 @@ export const validateTask = (request: IAuthReq<{ approve: boolean; rejectReason?
       },
     }).then(token => {
       const devicePushToken = token?.dataValues.token;
+
+      logger.info('The token is: ' + devicePushToken);
 
       if (!devicePushToken) return;
 
@@ -109,8 +116,10 @@ export const validateTask = (request: IAuthReq<{ approve: boolean; rejectReason?
         token: devicePushToken,
       };
 
+      logger.info('Sending the message: ________' + JSON.stringify(message));
+
       getMessaging().send(message);
-    }).catch(err => console.error(err));
+    }).catch(err => logger.err(err));
   }).catch(err => {
     response.status(500).send(err);
   });

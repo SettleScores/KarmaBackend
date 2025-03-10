@@ -5,8 +5,9 @@ import { getMessaging } from 'firebase-admin/messaging';
 import { PushToken } from '@src/db/models/PushToken';
 import jwt from 'jsonwebtoken';
 import { extractToken } from '@src/util/generateToken';
+import logger from 'jet-logger';
 
-export const pushTheTempo = async (request: IAuthReq<{title: string, body: any}>, response: IRes) => {
+export const pushTheTempo = async (request: IAuthReq<{ title: string, body: any }>, response: IRes) => {
   console.log('qqq Private key path: ' + EnvVars.Firebase.PrivateKeyPath);
 
   const { tokenAfterSplit } = extractToken(request);
@@ -17,7 +18,7 @@ export const pushTheTempo = async (request: IAuthReq<{title: string, body: any}>
     where: {
       userId: userId,
     },
-  }) as any;  
+  }) as any;
 
   const devicePushToken = pushToken.dataValues.token;
 
@@ -38,14 +39,14 @@ export const pushTheTempo = async (request: IAuthReq<{title: string, body: any}>
     .send(message)
     .then((response) => {
       // Response is a message ID string.
-      console.log('Successfully sent message:', response);
+      logger.info('Successfully sent message: ' + response);
     })
     .catch((error) => {
-      console.log('Error sending message:', error);
+      logger.err('Error sending message: ' + error);
     });
 };
 
-export const pushTheToken = (request: IAuthReq<{token: string}>, response: IRes) => {
+export const pushTheToken = (request: IAuthReq<{ token: string }>, response: IRes) => {
   console.log('qqq pushTheToken');
 
   try {
@@ -66,8 +67,8 @@ export const pushTheToken = (request: IAuthReq<{token: string}>, response: IRes)
   }
 };
 
-export const pushTheTempoForAll = (request: IAuthReq<{body: string, title: string}>, response: IRes) => {
-  console.log('pushTheTempoForAll', request.body);
+export const pushTheTempoForAll = (request: IAuthReq<{ body: string, title: string }>, response: IRes) => {
+  logger.info('pushTheTempoForAll      ___' + JSON.stringify(request.body));
 
   const notificationText = request.body.body;
   const notificationTitle = request.body.title;
@@ -76,7 +77,7 @@ export const pushTheTempoForAll = (request: IAuthReq<{body: string, title: strin
 
   PushToken.findAll().then((pushTokens) => {
     pushTokens.forEach((pushToken) => {
-      console.log('pushTheTempoForAll pushToken: ', pushToken);
+      logger.info('pushTheTempoForAll pushToken: ' + pushToken?.dataValues?.token);
 
       const message = {
         notification: {
@@ -89,11 +90,12 @@ export const pushTheTempoForAll = (request: IAuthReq<{body: string, title: strin
       messaging
         .send(message)
         .then((resp) => {
-          console.log('Successfully sent message:', resp);
+          logger.info('Successfully sent message: ' + resp);
           response.status(200).send();
         })
         .catch((error) => {
-          console.log('Error sending message:', error);
+          logger.err('Error sending message');
+          logger.err(error);
         });
     });
   });

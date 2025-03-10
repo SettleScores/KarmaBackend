@@ -47,12 +47,31 @@ export const getTheUserProfile = async (request: IAuthReq, response: IRes) => {
 
   const pendingTasksCount = pendingTasksStatuses.length
 
-  /// TODO Done tasks will be Later. After Moderation done.
+
+  const completedTasksCount = await TaskStatus.count({
+    where: {
+      [Op.and]: [
+        { userId: foundUser.id },
+        { status: 'Done' },
+      ],
+    },
+  });
+
+  const rejectedTasksCount = await TaskStatus.count({
+    where: {
+      [Op.and]: [
+        { userId: foundUser.id },
+        { status: 'Rejected' },
+      ],
+    },
+  });
 
   return response.status(200).send({ 
     username: foundUser.username,
     rankName: foundUserRankName,
     working: workingTasksCount,
     pending: pendingTasksCount,
+    completed: completedTasksCount,
+    rejected: rejectedTasksCount,
   });
 };
