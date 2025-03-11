@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const HttpStatusCodes_1 = __importDefault(require("@src/constants/HttpStatusCodes"));
 const UserService_1 = __importDefault(require("@src/services/UserService"));
+const jet_logger_1 = __importDefault(require("jet-logger"));
 function getAll(_, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const users = yield UserService_1.default.getAll();
@@ -24,6 +25,7 @@ function add(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { user } = req.body;
         yield UserService_1.default.addOne(user);
+        jet_logger_1.default.info(`User registered ${JSON.stringify(req.body)}`);
         return res.status(HttpStatusCodes_1.default.CREATED).end();
     });
 }
