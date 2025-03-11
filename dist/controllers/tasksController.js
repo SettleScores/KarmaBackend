@@ -69,6 +69,7 @@ const validateTask = (request, response) => {
     const id = request.params.id;
     const approve = request.body.approve;
     const reason = request.body.rejectReason;
+    const userId = request.body.userId;
     const newStatus = approve ? 'Done' : 'Rejected';
     if (!Number.isInteger(Number(id))) {
         return response.status(401).send('Invalid id value');
@@ -82,12 +83,12 @@ const validateTask = (request, response) => {
         },
         returning: true,
     }).then(([_, obj]) => {
-        jet_logger_1.default.info('Task status for user ' + request.user.id + ' updated: ' + newStatus);
+        jet_logger_1.default.info('Task status for user ' + userId + ' updated: ' + newStatus);
         response.status(200).send(obj[0]);
         jet_logger_1.default.info('Looking for a push token');
         PushToken_1.PushToken.findOne({
             where: {
-                userId: request.user.id,
+                userId,
             },
         }).then(token => {
             const devicePushToken = token === null || token === void 0 ? void 0 : token.dataValues.token;
