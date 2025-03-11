@@ -189,9 +189,8 @@ const Example = () => {
       accessToken={authToken}
       handleValidate={(approve, rejectReason) => {
         if (!activeTask) return;
-        validateTaskStatus.mutate({ taskStatusId: activeTask.id, approve, rejectReason });
+        validateTaskStatus.mutate({ taskStatusId: activeTask.id, approve, rejectReason, userId: activeTask.userId });
       }}
-
     />
   </>
 };

@@ -102,7 +102,7 @@ export const getFile = async (accessToken: string, filename: string): Promise<st
     return res;
 }
 
-export const validateTask = async (accessToken: string, taskStatusId: number, approve: boolean, reason?: string): Promise<{ id: number, status: TaskStatus["status"] }> => {
+export const validateTask = async (accessToken: string, taskStatusId: number, approve: boolean, userId: number, reason?: string): Promise<{ id: number, status: TaskStatus["status"] }> => {
     const response = await fetch(`${baseUrl}api/karma/taskstatus/${taskStatusId}/validate`, {
         method: 'POST',
         headers: {
@@ -113,6 +113,7 @@ export const validateTask = async (accessToken: string, taskStatusId: number, ap
         body: JSON.stringify({
             approve,
             rejectReason: reason,
+            userId: userId
         })
     })
 

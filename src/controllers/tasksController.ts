@@ -72,11 +72,12 @@ export const uploadTheFile = (request: IAuthReq<{ taskId: number, filename: stri
   }
 };
 
-export const validateTask = (request: IAuthReq<{ approve: boolean; rejectReason?: string }>, response: IRes) => {
+export const validateTask = (request: IAuthReq<{ approve: boolean; rejectReason?: string, userId: string; }>, response: IRes) => {
   const id = request.params.id;
   const approve = request.body.approve;
   const reason = request.body.rejectReason;
-  const newStatus = approve ? 'Done' : 'Rejected'
+  const userId = request.body.userId;
+  const newStatus = approve ? 'Done' : 'Rejected';
 
   if (!Number.isInteger(Number(id))) {
     return response.status(401).send('Invalid id value');
@@ -91,7 +92,7 @@ export const validateTask = (request: IAuthReq<{ approve: boolean; rejectReason?
     },
     returning: true,
   }).then(([_, obj]) => {
-    logger.info('Task status for user ' + request.user.id + ' updated: ' + newStatus)
+    logger.info('Task status for user ' + userId + ' updated: ' + newStatus)
 
     response.status(200).send(obj[0]);
 
@@ -99,7 +100,7 @@ export const validateTask = (request: IAuthReq<{ approve: boolean; rejectReason?
 
     PushToken.findOne({
       where: {
-        userId: request.user.id,
+        userId,
       },
     }).then(token => {
       const devicePushToken = token?.dataValues.token;

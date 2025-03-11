@@ -24,8 +24,8 @@ export const useValidateUserTaskStatus = (accessToken: string, queryKey: Array<u
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (props: { taskStatusId: number, approve: boolean, rejectReason?: string }) => {
-            const result = await validateTask(accessToken, props.taskStatusId, props.approve, props.rejectReason)
+        mutationFn: async (props: { taskStatusId: number, approve: boolean, userId: number, rejectReason?: string }) => {
+            const result = await validateTask(accessToken, props.taskStatusId, props.approve, props.userId, props.rejectReason)
             return result;
         },
         onSuccess: async ({ id, status }: { id: number, status: TaskStatus["status"] }) => {
