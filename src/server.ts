@@ -19,7 +19,12 @@ import admin from 'firebase-admin';
 import { seed } from './seed';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const serviceAccount = require(EnvVars.Firebase.PrivateKeyPath) as string;
+
+const serviceAccount = require(
+  path.resolve(process.cwd(), EnvVars.Firebase.PrivateKeyPath)
+);
+
+console.log('qqq encore Firebase loaded for project:', serviceAccount.project_id);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
