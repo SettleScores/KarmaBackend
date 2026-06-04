@@ -25,7 +25,7 @@
     "@src": "dist"
   },
   "engines": {
-    "node": ">=8.10.0"
+  "node": "24.x"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.61.0",
