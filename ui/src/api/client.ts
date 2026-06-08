@@ -5,7 +5,7 @@ import {
 } from 'material-react-table';
 import { Task, TaskStatus,UserApiResponse } from './types.ts';
 
-export const baseUrl = 'https://161.35.3.11:8081/';
+export const baseUrl = 'https://karmabackend-production.up.railway.app:8080/';
 
 export const login = (username: string | null, password: string | null): Promise<string> => {
     return fetch(`${baseUrl}api/karma/login`, {
