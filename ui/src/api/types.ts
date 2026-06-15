@@ -9,7 +9,6 @@ export type User = {
     email: string;
     gender: string;
     username: string;
-    password: string;
     rankId: number;
     createdAt: string;
     updatedAt: string;

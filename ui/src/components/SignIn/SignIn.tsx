@@ -1,178 +1,168 @@
 import { useState, useContext } from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import FormLabel from '@mui/material/FormLabel';
-import FormControl from '@mui/material/FormControl';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
-import MuiCard from '@mui/material/Card';
-import { styled } from '@mui/material/styles';
+import { Alert, Button, Collapse, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material';
+import { styled, alpha } from '@mui/material/styles';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import { useNavigate } from 'react-router-dom';
+
 import { login } from '../../api/client';
 import { SetAuthContext } from '../../state/authContext';
-import { useNavigate } from "react-router-dom";
+import { KarmaMark, Reveal, Ring, Wordmark } from '../ui';
 
-const Card = styled(MuiCard)(({ theme }) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    alignSelf: 'center',
-    width: '100%',
-    padding: theme.spacing(4),
-    gap: theme.spacing(2),
-    margin: 'auto',
-    [theme.breakpoints.up('sm')]: {
-        maxWidth: '450px',
-    },
-    boxShadow:
-        'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-    ...theme.applyStyles('dark', {
-        boxShadow:
-            'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
-    }),
+const Page = styled('div')(({ theme }) => ({
+  minHeight: '100vh',
+  display: 'grid',
+  placeItems: 'center',
+  padding: theme.spacing(2),
+  position: 'relative',
+  overflow: 'hidden',
+  background: theme.gradient.login,
 }));
 
-const SignInContainer = styled(Stack)(({ theme }) => ({
-    height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
-    minHeight: '100%',
-    padding: theme.spacing(2),
-    [theme.breakpoints.up('sm')]: {
-        padding: theme.spacing(4),
-    },
-    '&::before': {
-        content: '""',
-        display: 'block',
-        position: 'absolute',
-        zIndex: -1,
-        inset: 0,
-    },
+const Atmosphere = styled('div')({ position: 'absolute', inset: 0, pointerEvents: 'none' });
+
+const RingA = styled(Ring)({ top: -160, left: -120, width: 420, height: 420 });
+const RingB = styled(Ring)({ top: -90, left: -40, width: 260, height: 260 });
+const RingC = styled(Ring)({ bottom: -180, right: -120, width: 460, height: 460 });
+
+const WhiteBlob = styled('span')(({ theme }) => ({
+  position: 'absolute',
+  top: '12%',
+  right: '14%',
+  width: 320,
+  height: 320,
+  borderRadius: '50%',
+  background: `radial-gradient(circle, ${theme.palette.onBrand.fillStrong}, transparent 70%)`,
+  filter: 'blur(8px)',
 }));
+const CyanBlob = styled('span')(({ theme }) => ({
+  position: 'absolute',
+  bottom: '6%',
+  left: '10%',
+  width: 260,
+  height: 260,
+  borderRadius: '50%',
+  background: `radial-gradient(circle, ${alpha(theme.palette.brand.cyan, 0.2)}, transparent 70%)`,
+  filter: 'blur(10px)',
+}));
+
+const Content = styled(Stack)({ position: 'relative', width: '100%', maxWidth: 432 });
+
+const Float = styled('div')({ animation: 'k-float 7s ease-in-out infinite' });
+
+const HeroGlow = styled('div')(({ theme }) => ({ textAlign: 'center', color: theme.palette.onBrand.text, textShadow: theme.glow.text }));
+
+const Card = styled(Reveal)(({ theme }) => ({
+  width: '100%',
+  backgroundColor: theme.palette.background.paper,
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.radii.lg,
+  boxShadow: theme.shadows[16],
+  padding: theme.spacing(4),
+  [theme.breakpoints.down('sm')]: { padding: theme.spacing(3) },
+}));
+
+const FooterText = styled(Typography)(({ theme }) => ({ color: theme.palette.onBrand.textSoft, textAlign: 'center' }));
 
 export default function SignIn() {
-    const [emailError, setEmailError] = useState(false);
-    const [emailErrorMessage, setEmailErrorMessage] = useState('');
-    const [passwordError, setPasswordError] = useState(false);
-    const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-    const setAuthContext = useContext(SetAuthContext);
+  const setAuthContext = useContext(SetAuthContext);
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError('');
+    setSubmitting(true);
+    const data = new FormData(event.currentTarget);
+    try {
+      const accessToken = await login(data.get('email') as string, data.get('password') as string);
+      if (!accessToken) throw new Error('Invalid credentials');
+      setAuthContext(accessToken);
+      navigate('/dashboard');
+    } catch {
+      setError('Sign in failed. Please check your credentials and try again.');
+      setSubmitting(false);
+    }
+  };
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        if (emailError || passwordError) {
-            event.preventDefault();
-            return;
-        }
-        const data = new FormData(event.currentTarget);
-        try {
-            const accessToken = await login(data.get('email') as string, data.get('password') as string);
-            setAuthContext(accessToken);
-            navigate('/dashboard');
-        } catch (err) {
-            setPasswordError(true);
-            setPasswordErrorMessage(JSON.stringify(err));
-        }
-    };
+  return (
+    <Page>
+      <Atmosphere>
+        <RingA />
+        <RingB />
+        <RingC />
+        <WhiteBlob />
+        <CyanBlob />
+      </Atmosphere>
 
-    const validateInputs = () => {
-        // const email = document.getElementById('email') as HTMLInputElement;
-        // const password = document.getElementById('password') as HTMLInputElement;
+      <Content alignItems="center" spacing={3.5}>
+        <Reveal>
+          <Stack alignItems="center" spacing={1.5}>
+            <Float>
+              <KarmaMark size={68} variant="glyph" animated />
+            </Float>
+            <HeroGlow>
+              <Wordmark tone="light" size="2.7rem" />
+            </HeroGlow>
+            <HeroGlow>
+              <Typography variant="h5">Improve your life</Typography>
+            </HeroGlow>
+          </Stack>
+        </Reveal>
 
-        let isValid = true;
+        <Card delay={0.12}>
+          <Stack spacing={0.5} mb={3}>
+            <Typography variant="h4" color="text.primary">
+              Welcome back
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Sign in to the Karma admin console.
+            </Typography>
+          </Stack>
 
-        // if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-        //     setEmailError(true);
-        //     setEmailErrorMessage('Please enter a valid email address.');
-        //     isValid = false;
-        // } else {
-        //     setEmailError(false);
-        //     setEmailErrorMessage('');
-        // }
+          <form onSubmit={handleSubmit} noValidate>
+            <Stack spacing={2.25}>
+              <TextField label="Username / Email" id="email" name="email" type="email" placeholder="you@karma.app" autoComplete="username" autoFocus fullWidth />
+              <TextField
+                label="Password"
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                autoComplete="current-password"
+                fullWidth
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowPassword((s) => !s)} edge="end" size="small" aria-label={showPassword ? 'Hide password' : 'Show password'}>
+                        {showPassword ? <VisibilityOffRoundedIcon fontSize="small" /> : <VisibilityRoundedIcon fontSize="small" />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
 
-        // if (!password.value || password.value.length < 6) {
-        //     setPasswordError(true);
-        //     setPasswordErrorMessage('Password must be at least 6 characters long.');
-        //     isValid = false;
-        // } else {
-        //     setPasswordError(false);
-        //     setPasswordErrorMessage('');
-        // }
+              <Collapse in={!!error}>
+                <Alert severity="error" variant="outlined">
+                  {error}
+                </Alert>
+              </Collapse>
 
-        return isValid;
-    };
+              <Button type="submit" size="large" fullWidth variant="contained" disabled={submitting} endIcon={!submitting && <ArrowForwardRoundedIcon />}>
+                {submitting ? 'Signing in…' : 'Sign in'}
+              </Button>
+            </Stack>
+          </form>
+        </Card>
 
-    return (
-        <>
-            <CssBaseline enableColorScheme />
-            <SignInContainer direction="column" justifyContent="space-between">
-                <Card variant="outlined">
-                    <Typography
-                        component="h1"
-                        variant="h4"
-                        sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
-                    >
-                        Sign in
-                    </Typography>
-                    <Box
-                        component="form"
-                        onSubmit={handleSubmit}
-                        noValidate
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            width: '100%',
-                            gap: 2,
-                        }}
-                    >
-                        <FormControl>
-                            <FormLabel htmlFor="email">Username / Email</FormLabel>
-                            <TextField
-                                error={emailError}
-                                helperText={emailErrorMessage}
-                                id="email"
-                                type="email"
-                                name="email"
-                                placeholder="your@email.com"
-                                autoComplete="email"
-                                autoFocus
-                                required
-                                fullWidth
-                                variant="outlined"
-                                color={emailError ? 'error' : 'primary'}
-                                sx={{ ariaLabel: 'email' }}
-                            />
-                        </FormControl>
-                        <FormControl>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <FormLabel htmlFor="password">Password</FormLabel>
-                            </Box>
-                            <TextField
-                                error={passwordError}
-                                helperText={passwordErrorMessage}
-                                name="password"
-                                placeholder="••••••"
-                                type="password"
-                                id="password"
-                                autoComplete="current-password"
-                                autoFocus
-                                required
-                                fullWidth
-                                variant="outlined"
-                                color={passwordError ? 'error' : 'primary'}
-                            />
-                        </FormControl>
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            onClick={validateInputs}
-                        >
-                            Sign in
-                        </Button>
-                    </Box>
-                </Card>
-            </SignInContainer>
-        </>
-    );
+        <Reveal delay={0.2}>
+          <FooterText variant="caption">Karma · Admin console</FooterText>
+        </Reveal>
+      </Content>
+    </Page>
+  );
 }
