@@ -33,7 +33,7 @@ async function getAllUsers(_: IReq, response: IRes) {
 
   const resultArray = {
     data: users,
-    cunt: users.length,
+    count: users.length,
   };
 
   response.status(HttpStatusCodes.OK).json(resultArray);

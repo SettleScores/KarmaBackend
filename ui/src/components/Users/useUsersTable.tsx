@@ -36,7 +36,7 @@ export function useUsersTable() {
   const queryKey = ['users'];
 
   const {
-    data: { data = [], cunt } = {},
+    data: { data = [], count } = {},
     isError,
     isRefetching,
     isLoading,
@@ -194,7 +194,7 @@ export function useUsersTable() {
     isError,
     view,
     applyView,
-    stats: { members: cunt ?? data.length, tasks: tasksData.data?.length ?? 0, pending },
+    stats: { members: count ?? data.length, tasks: tasksData.data?.length ?? 0, pending },
     dialog: {
       open,
       task: activeTask,

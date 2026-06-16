@@ -38,10 +38,13 @@ function getAllRoles(_, response) {
 }
 function getAllUsers(_, response) {
     return __awaiter(this, void 0, void 0, function* () {
-        const users = yield User_1.User.findAll({ include: [{ model: TaskStatus_1.TaskStatus, as: 'tasks' }] });
+        const users = yield User_1.User.findAll({
+            attributes: { exclude: ['password'] },
+            include: [{ model: TaskStatus_1.TaskStatus, as: 'tasks' }],
+        });
         const resultArray = {
             data: users,
-            cunt: users.length,
+            count: users.length,
         };
         response.status(HttpStatusCodes_1.default.OK).json(resultArray);
     });

@@ -6,7 +6,9 @@ import express, { Request, Response, NextFunction } from 'express';
 import logger from 'jet-logger';
 import fs from 'fs';
 import 'express-async-errors';
+import swaggerUi from 'swagger-ui-express';
 import BaseRouter from '@src/routes/api';
+import swaggerSpec from '@src/swagger';
 import Paths from '@src/constants/Paths';
 import EnvVars from '@src/constants/EnvVars';
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
@@ -69,6 +71,26 @@ if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf()) {
 
 // Add APIs, must be after middleware
 app.use(Paths.Base, BaseRouter);
+
+// API docs (Swagger UI). Mounted before the static/catch-all handlers so the
+// docs aren't swallowed by the SPA fallback. A relaxed Content-Security-Policy
+// is scoped to this path only so Swagger UI's inline bootstrap still runs when
+// helmet is enabled in production; the rest of the app keeps helmet's defaults.
+app.use(
+  Paths.Docs,
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        'script-src': ["'self'", "'unsafe-inline'"],
+        'style-src': ["'self'", "'unsafe-inline'", 'https:'],
+        'img-src': ["'self'", 'data:', 'https:'],
+      },
+    },
+  }),
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, { customSiteTitle: 'Karma App API Docs' }),
+);
 
 const LOGS_DIR = './'; // Root directory
 

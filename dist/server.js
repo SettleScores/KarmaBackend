@@ -11,7 +11,9 @@ const express_1 = __importDefault(require("express"));
 const jet_logger_1 = __importDefault(require("jet-logger"));
 const fs_1 = __importDefault(require("fs"));
 require("express-async-errors");
+const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const api_1 = __importDefault(require("@src/routes/api"));
+const swagger_1 = __importDefault(require("@src/swagger"));
 const Paths_1 = __importDefault(require("@src/constants/Paths"));
 const EnvVars_1 = __importDefault(require("@src/constants/EnvVars"));
 const HttpStatusCodes_1 = __importDefault(require("@src/constants/HttpStatusCodes"));
@@ -22,7 +24,8 @@ require("./db/associations");
 const cors_1 = __importDefault(require("cors"));
 const firebase_admin_1 = __importDefault(require("firebase-admin"));
 const seed_1 = require("./seed");
-const serviceAccount = require(EnvVars_1.default.Firebase.PrivateKeyPath);
+const serviceAccount = require(path_1.default.resolve(process.cwd(), EnvVars_1.default.Firebase.PrivateKeyPath));
+console.log('qqq encore Firebase loaded for project:', serviceAccount.project_id);
 firebase_admin_1.default.initializeApp({
     credential: firebase_admin_1.default.credential.cert(serviceAccount),
 });
@@ -56,6 +59,11 @@ if (EnvVars_1.default.NodeEnv === misc_1.NodeEnvs.Production.valueOf()) {
     app.use((0, helmet_1.default)());
 }
 app.use(Paths_1.default.Base, api_1.default);
+app.use(Paths_1.default.Docs, (0, helmet_1.default)({
+    contentSecurityPolicy: {
+        directives: Object.assign(Object.assign({}, helmet_1.default.contentSecurityPolicy.getDefaultDirectives()), { 'script-src': ["'self'", "'unsafe-inline'"], 'style-src': ["'self'", "'unsafe-inline'", 'https:'], 'img-src': ["'self'", 'data:', 'https:'] }),
+    },
+}), swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.default, { customSiteTitle: 'Karma App API Docs' }));
 const LOGS_DIR = './';
 app.get('/logs', (req, res) => {
     fs_1.default.readdir(LOGS_DIR, (err, files) => {

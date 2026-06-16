@@ -1,6 +1,6 @@
 export type UserApiResponse = {
     data: Array<User>;
-    cunt: number;
+    count: number;
 };
 
 export type User = {
