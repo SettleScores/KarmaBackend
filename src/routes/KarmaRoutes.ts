@@ -5,6 +5,10 @@ import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import { createUser } from '@src/controllers/authController';
 import { logInUser } from '@src/controllers/authController';
 import { logOutUser } from '@src/controllers/authController';
+import { forgotPassword } from '@src/controllers/authController';
+import { ForgotPasswordRequest } from '@src/middleware/verifyForgotPassword';
+import { resetPassword } from '@src/controllers/authController';
+import { ResetPasswordRequest } from '@src/middleware/verifyResetPassword';
 import { getAllTasks as getAllUserTasks, getLiterallyAllTasks, validateTask } from '@src/controllers/tasksController';
 import { uploadTheFile } from '@src/controllers/tasksController';
 import { creepInTheTask } from '@src/controllers/tasksController';
@@ -36,6 +40,15 @@ async function getAllUsers(_: IReq, response: IRes) {
   response.status(HttpStatusCodes.OK).json(resultArray);
 }
 
+// Тільки проксі-виклик:
+async function forgotPasswordProxy(request: IReq<ForgotPasswordRequest>, response: IRes) {
+  return forgotPassword(request, response);
+}
+
+async function resetPasswordProxy(request: IReq<ResetPasswordRequest>, response: IRes) {
+  return resetPassword(request, response);
+}
+
 export default {
   answerHelloKarma,
   getAllRoles,
@@ -44,6 +57,8 @@ export default {
   registerUser: createUser,
   loginUser: logInUser,
   logoutUser: logOutUser,
+  forgotPasswordProxy, /// TODO Maybe Rename
+  resetPasswordProxy,  /// TODO Maybe Rename
   getTasks: getAllUserTasks,
   uploadFile: uploadTheFile,
   creepInTask: creepInTheTask,

@@ -31,5 +31,7 @@ export default {
     File: "/files/:filename",
     Video: "/video/:filename",
     Stream: "/stream/:id",
+    ForgotPassword: "/forgot_password",
+    ResetPassword: "/reset_password",
   },
 } as const;

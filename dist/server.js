@@ -22,7 +22,8 @@ require("./db/associations");
 const cors_1 = __importDefault(require("cors"));
 const firebase_admin_1 = __importDefault(require("firebase-admin"));
 const seed_1 = require("./seed");
-const serviceAccount = require(EnvVars_1.default.Firebase.PrivateKeyPath);
+const serviceAccount = require(path_1.default.resolve(process.cwd(), EnvVars_1.default.Firebase.PrivateKeyPath));
+console.log('qqq encore Firebase loaded for project:', serviceAccount.project_id);
 firebase_admin_1.default.initializeApp({
     credential: firebase_admin_1.default.credential.cert(serviceAccount),
 });

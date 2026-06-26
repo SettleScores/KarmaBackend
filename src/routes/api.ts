@@ -155,6 +155,21 @@ karmaRouter.get(
   KarmaRoutes.streamVideo,
 );
 
+karmaRouter.post(
+  Paths.Karma.Stream,
+  KarmaRoutes.streamVideo,
+);
+
+karmaRouter.post(
+  Paths.Karma.ForgotPassword,
+  KarmaRoutes.forgotPasswordProxy,
+);
+
+karmaRouter.post(
+  Paths.Karma.ResetPassword,
+  KarmaRoutes.resetPasswordProxy,
+);
+
 // Add UserRouter
 apiRouter.use(Paths.Users.Base, userRouter);
 
