@@ -52,7 +52,7 @@ function populateInitialMaintenanceData() {
         email: "admin@gmail.com",
         gender: "male",
         username: "Admin",
-        password: bcrypt_1.default.hashSync("6666", 8),
+        password: bcrypt_1.default.hashSync("1111", 8),
         rankId: 1,
     }).then((user) => user.setRoles([3]));
     populateDummyArseholes();

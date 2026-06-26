@@ -1,217 +1,91 @@
-import { ReactNode, useContext, useMemo, useState } from 'react';
-import {
-  MRT_Row,
-  MaterialReactTable,
-  useMaterialReactTable,
-  type MRT_ColumnDef,
-  type MRT_ColumnFiltersState,
-  type MRT_PaginationState,
-  type MRT_SortingState,
-} from 'material-react-table';
-import { IconButton, Tooltip, Typography } from '@mui/material';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import {
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query'; //note: this is TanStack React Query V5
-import { Button, TextField, Stack } from "@mui/material"
-import { sendPushForAll } from '../../api/client';
-import { AuthContext } from '../../state/authContext';
-import { Task, TaskStatus, User } from '../../api/types';
+import { Button, IconButton, Stack, Tooltip } from '@mui/material';
+import { styled, useTheme } from '@mui/material/styles';
+import { MaterialReactTable } from 'material-react-table';
+import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
+import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
+import PendingActionsRoundedIcon from '@mui/icons-material/PendingActionsRounded';
+import CampaignRoundedIcon from '@mui/icons-material/CampaignRounded';
+import TableRowsRoundedIcon from '@mui/icons-material/TableRowsRounded';
+import FilterAltOffRoundedIcon from '@mui/icons-material/FilterAltOffRounded';
+
+import { DashboardLayout } from '../Layout/DashboardLayout';
+import { Panel, Reveal, SpinningRefresh, StatCard } from '../ui';
 import ApproveDialog from '../ApproveDialog/ApproveDialog';
-import { useTasks, useUsers, useValidateUserTaskStatus } from './queries';
+import { Broadcast } from './Broadcast';
+import { useUsersTable } from './useUsersTable';
 
-const Example = () => {
-  const authToken = useContext(AuthContext) as string;
+const StatGrid = styled('div')(({ theme }) => ({
+  display: 'grid',
+  gap: theme.spacing(2.5),
+  gridTemplateColumns: '1fr',
+  [theme.breakpoints.up('sm')]: { gridTemplateColumns: 'repeat(3, 1fr)' },
+}));
 
-  //manage our own state for stuff we want to pass to the API
-  const [columnFilters, setColumnFilters] = useState<MRT_ColumnFiltersState>(
-    [],
-  );
-  const [globalFilter, setGlobalFilter] = useState('');
-  const [sorting, setSorting] = useState<MRT_SortingState>([]);
-  const [pagination, setPagination] = useState<MRT_PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
+const Sections = styled(Stack)(({ theme }) => ({ gap: theme.spacing(3), [theme.breakpoints.down('sm')]: { gap: theme.spacing(2.5) } }));
 
-  const [open, setOpen] = useState(false);
-  const [activeTask, setActiveTask] = useState<Task & TaskStatus | null>(null);
+const BroadcastButton = styled(Button)(({ theme }) => ({ [theme.breakpoints.down('sm')]: { display: 'none' } }));
 
+function Dashboard() {
+  const { palette } = useTheme();
+  const { table, refetch, isRefetching, isLoading, stats, dialog, view, applyView } = useUsersTable();
 
-  const queryKey = [
-    'users',
-    columnFilters, //refetch when columnFilters changes
-    globalFilter, //refetch when globalFilter changes
-    pagination.pageIndex, //refetch when pagination.pageIndex changes
-    pagination.pageSize, //refetch when pagination.pageSize changes
-    sorting, //refetch when sorting changes
-  ]
+  const scrollToBroadcast = () => document.getElementById('broadcast')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-  const {
-    data: { data = [], cunt } = {},
-    isError,
-    isRefetching,
-    isLoading,
-    refetch,
-  } = useUsers(queryKey, columnFilters, globalFilter, pagination, sorting, authToken);
-
-  const tasksData = useTasks(authToken);
-
-  const validateTaskStatus = useValidateUserTaskStatus(authToken, queryKey, () => setOpen(false), (err) => {
-    setOpen(false);
-    alert(err);
-  })
-
-  const columns = useMemo<MRT_ColumnDef<User>[]>(
-    () => [
-      {
-        accessorKey: 'id', //access nested data with dot notation
-        header: 'Id',
-        size: 150,
-      },
-      {
-        accessorKey: 'fullName',
-        header: 'Full Name',
-        size: 150,
-      },
-      {
-        accessorKey: 'email',
-        header: 'Email',
-        size: 150,
-      },
-      {
-        accessorKey: 'gender',
-        header: 'Gender',
-        size: 150,
-      },
-      {
-        accessorKey: 'username',
-        header: 'Username',
-        size: 150,
-      },
-      {
-        accessorKey: 'password',
-        header: 'Password',
-        size: 150,
-      },
-      {
-        accessorKey: 'rankId',
-        header: 'Rank Id',
-        size: 150,
-      },
-      {
-        accessorKey: 'createdAt',
-        header: 'Created At',
-        size: 150,
-      },
-      {
-        accessorKey: 'updatedAt',
-        header: 'Updated At',
-        size: 150,
-
-
-      },
-      ...(tasksData.data || []).map(task => ({
-        accessorFn: (user: User) => {
-          const taskStatus = user.tasks.find(t => t.taskId === task.id);
-          if (!taskStatus) return 'Not started';
-
-          if (taskStatus.status === 'Unknown') return 'Not started';
-          if (taskStatus.status === 'Done') return 'Completed';
-          if (taskStatus.status === 'Working') return 'In progress';
-          if (taskStatus.status === 'Rejected') return 'Rejected';
-          if (taskStatus.status === 'Pending') return 'Pending';
-
-          return taskStatus.status;
-        },
-        Cell: ({ row, renderedCellValue }: { row: MRT_Row<User>; renderedCellValue: ReactNode }) => {
-          const taskStatus = row.original.tasks.find(t => t.taskId === task.id);
-          if (taskStatus?.status !== 'Pending') return renderedCellValue;
-
-          return <Stack direction="row" alignItems="center" spacing={1}>
-            <Typography>{renderedCellValue}</Typography>
-            <Button onClick={() => {
-              setActiveTask({ ...task, ...taskStatus })
-              setOpen(true);
-            }}>review</Button>
-          </Stack>
-        },
-        header: task.description,
-        size: 200
-      }))
-    ],
-    [tasksData.data, setActiveTask, setOpen],
-  );
-
-  const table = useMaterialReactTable({
-    columns,
-    data,
-    initialState: { showColumnFilters: false },
-    manualFiltering: false, //turn off built-in client-side filtering
-    manualPagination: false, //turn off built-in client-side pagination
-    manualSorting: false, //turn off built-in client-side sorting
-    muiToolbarAlertBannerProps: isError
-      ? {
-        color: 'error',
-        children: 'Error loading data',
-      }
-      : undefined,
-    onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
-    onPaginationChange: setPagination,
-    onSortingChange: setSorting,
-    renderTopToolbarCustomActions: () => (
-      <Tooltip arrow title="Refresh Data">
-        <IconButton onClick={() => refetch()}>
-          <RefreshIcon />
+  const actions = (
+    <>
+      <Tooltip title="Refresh data" arrow>
+        <IconButton onClick={() => refetch()} aria-label="Refresh data">
+          <SpinningRefresh spinning={isRefetching} />
         </IconButton>
       </Tooltip>
-    ),
-    rowCount: cunt ?? 0,
-    state: {
-      columnFilters,
-      globalFilter,
-      isLoading,
-      pagination,
-      showAlertBanner: isError,
-      showProgressBars: isRefetching,
-      sorting,
-    },
-  });
+      <BroadcastButton variant="contained" startIcon={<CampaignRoundedIcon />} onClick={scrollToBroadcast}>
+        Broadcast
+      </BroadcastButton>
+    </>
+  );
 
-  return <>
-    <MaterialReactTable table={table} />;
-    <ApproveDialog
-      open={open}
-      handleClose={() => setOpen(false)}
-      task={activeTask}
-      accessToken={authToken}
-      handleValidate={(approve, rejectReason) => {
-        if (!activeTask) return;
-        validateTaskStatus.mutate({ taskStatusId: activeTask.id, approve, rejectReason, userId: activeTask.userId });
-      }}
-    />
-  </>
-};
+  const viewSubtitle =
+    view === 'pending'
+      ? 'Filtered to members with pending deeds'
+      : view === 'active'
+        ? 'Filtered to members with ongoing deeds'
+        : 'Search, filter, and review submitted deeds';
 
-const queryClient = new QueryClient();
+  const clearFilter = view !== 'all' && (
+    <Button size="small" variant="outlined" startIcon={<FilterAltOffRoundedIcon />} onClick={() => applyView('all')}>
+      Clear filter
+    </Button>
+  );
 
-const SendPushForAllButt = () => {
-  const authToken = useContext(AuthContext) as string;
-  const [tokenText, setTokenText] = useState('');
-  return <Stack spacing={2} sx={{ maxWidth: '1200px', margin: '0 auto' }}  >
-    <TextField value={tokenText} onChange={(e) => setTokenText(e.target.value)} />
-    <Button onClick={() => { sendPushForAll(authToken, 'KarmaApp', tokenText) }}>Send Push For All</Button>
-  </Stack>
-};
+  return (
+    <DashboardLayout title="Members" subtitle="Review member deeds, confer rank, and keep everyone moving." actions={actions}>
+      <Sections>
+        <StatGrid>
+          <Reveal delay={0.02}>
+            <StatCard label="Members" value={stats.members.toLocaleString()} hint="show all" icon={<GroupsRoundedIcon />} accent={palette.brand.azure} gradientIcon loading={isLoading} onClick={() => applyView('all')} active={view === 'all'} />
+          </Reveal>
+          <Reveal delay={0.08}>
+            <StatCard label="Active deeds" value={stats.tasks} hint="filter ongoing" icon={<AutoAwesomeRoundedIcon />} accent={palette.brand.cyanDark} loading={isLoading} onClick={() => applyView(view === 'active' ? 'all' : 'active')} active={view === 'active'} />
+          </Reveal>
+          <Reveal delay={0.14}>
+            <StatCard label="Pending review" value={stats.pending} hint="filter pending" icon={<PendingActionsRoundedIcon />} accent={palette.status.Pending.dot} loading={isLoading} onClick={() => applyView(view === 'pending' ? 'all' : 'pending')} active={view === 'pending'} />
+          </Reveal>
+        </StatGrid>
 
-const ExampleWithReactQueryProvider = () => (
-  //App.tsx or AppProviders file. Don't just wrap this component with QueryClientProvider! Wrap your whole App!
-  <QueryClientProvider client={queryClient}>
-    <Example />
-    <SendPushForAllButt />
-  </QueryClientProvider>
-);
+        <Reveal delay={0.18}>
+          <Panel title="Members directory" subtitle={viewSubtitle} icon={<TableRowsRoundedIcon />} padded={false} actions={clearFilter || undefined}>
+            <MaterialReactTable table={table} />
+          </Panel>
+        </Reveal>
 
-export default ExampleWithReactQueryProvider;
+        <Reveal id="broadcast" delay={0.24}>
+          <Broadcast />
+        </Reveal>
+      </Sections>
+
+      <ApproveDialog {...dialog} />
+    </DashboardLayout>
+  );
+}
+
+export default Dashboard;

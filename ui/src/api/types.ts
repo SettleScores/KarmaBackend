@@ -1,6 +1,6 @@
 export type UserApiResponse = {
     data: Array<User>;
-    cunt: number;
+    count: number;
 };
 
 export type User = {
@@ -9,7 +9,6 @@ export type User = {
     email: string;
     gender: string;
     username: string;
-    password: string;
     rankId: number;
     createdAt: string;
     updatedAt: string;

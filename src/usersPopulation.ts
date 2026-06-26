@@ -53,7 +53,7 @@ function populateInitialMaintenanceData() {
     email: "admin@gmail.com",
     gender: "male",
     username: "Admin",
-    password: bcrypt.hashSync("6666", 8),
+    password: bcrypt.hashSync("1111", 8),
     rankId: 1,
   }).then((user) => user.setRoles([3]));
 
@@ -92,7 +92,8 @@ function populateDummyArseholes() {
     username: "Useradd2",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole2",
@@ -122,7 +123,8 @@ function populateDummyArseholes() {
     username: "Useradd3",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "playing-partying.mp4",
@@ -159,7 +161,8 @@ function populateDummyArseholes() {
     username: "Useradd4",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole4",
@@ -182,7 +185,8 @@ function populateDummyArseholes() {
     username: "Useradd5",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole5",
@@ -205,7 +209,8 @@ function populateDummyArseholes() {
     username: "Useradd6",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole6",
@@ -235,7 +240,8 @@ function populateDummyArseholes() {
     username: "Useradd7",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole7",
@@ -258,7 +264,8 @@ function populateDummyArseholes() {
     username: "Useradd8",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole8__",
@@ -281,7 +288,8 @@ function populateDummyArseholes() {
     username: "Useradd9",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole9__",
@@ -318,7 +326,8 @@ function populateDummyArseholes() {
     username: "Useradd10",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole10",
@@ -348,7 +357,8 @@ function populateDummyArseholes() {
     username: "Useradd11",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole11",
@@ -371,7 +381,8 @@ function populateDummyArseholes() {
     username: "Useradd12",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole12",
@@ -394,7 +405,8 @@ function populateDummyArseholes() {
     username: "Useradd13",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole13",
@@ -424,7 +436,8 @@ function populateDummyArseholes() {
     username: "Useradd14",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole14_",
@@ -447,7 +460,8 @@ function populateDummyArseholes() {
     username: "Useradd15",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole15",
@@ -470,7 +484,8 @@ function populateDummyArseholes() {
     username: "Useradd16",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole16",
@@ -507,7 +522,8 @@ function populateDummyArseholes() {
     username: "Useradd17",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole17",
@@ -530,7 +546,8 @@ function populateDummyArseholes() {
     username: "Useradd18",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole18",
@@ -560,7 +577,8 @@ function populateDummyArseholes() {
     username: "Useradd19",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole19",
@@ -583,7 +601,8 @@ function populateDummyArseholes() {
     username: "Useradd20",
     password: "555",
     rankId: 1,
-  }).then((user) => { user.setRoles([1]) 
+  }).then((user) => {
+    user.setRoles([1])
     TaskStatus.create({
       userId: user.id,
       fileName: "arsehole20",
@@ -618,7 +637,7 @@ function populateDummyArseholes() {
       taskId: 12,
       status: "Unknown",
     });
-  });  
+  });
 }
 
 export default populateInitialMaintenanceData;

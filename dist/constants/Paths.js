@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
     Base: "/api",
+    Docs: "/api-docs",
     Users: {
         Base: "/users",
         Get: "/all",

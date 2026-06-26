@@ -1,11 +1,6 @@
-import {
-    type MRT_ColumnFiltersState,
-    type MRT_PaginationState,
-    type MRT_SortingState,
-} from 'material-react-table';
-import { Task, TaskStatus,UserApiResponse } from './types.ts';
+import { Task, TaskStatus, UserApiResponse } from './types.ts';
 
-export const baseUrl = 'https://karmabackend-production.up.railway.app/';
+export const baseUrl = import.meta.env.PROD ? '/' : 'https://karmabackend-production.up.railway.app/';
 
 export const login = (username: string | null, password: string | null): Promise<string> => {
     return fetch(`${baseUrl}api/karma/login`, {
@@ -53,20 +48,8 @@ export const sendPushForAll = (accessToken: string, title: string | null, body: 
     })
 }
 
-export const getUsers = async (accessToken: string, columnFilters: MRT_ColumnFiltersState, globalFilter: string, sorting: MRT_SortingState, pagination: MRT_PaginationState): Promise<UserApiResponse> => {
-    const fetchURL = new URL("api/karma/users", baseUrl);
-
-    //read our state and pass it to the API as query params
-    fetchURL.searchParams.set(
-        "start",
-        `${pagination.pageIndex * pagination.pageSize}`
-    );
-    fetchURL.searchParams.set("size", `${pagination.pageSize}`);
-    fetchURL.searchParams.set("filters", JSON.stringify(columnFilters ?? []));
-    fetchURL.searchParams.set("globalFilter", globalFilter ?? "");
-    fetchURL.searchParams.set("sorting", JSON.stringify(sorting ?? []));
-
-    const response = await fetch(fetchURL, {
+export const getUsers = async (accessToken: string): Promise<UserApiResponse> => {
+    const response = await fetch(`${baseUrl}api/karma/users`, {
         headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
@@ -74,9 +57,7 @@ export const getUsers = async (accessToken: string, columnFilters: MRT_ColumnFil
         },
     });
 
-    const json = (await response.json()) as UserApiResponse;
-
-    return json;
+    return (await response.json()) as UserApiResponse;
 }
 
 export const getAllTasks = async (accessToken: string): Promise<Task[]> => {

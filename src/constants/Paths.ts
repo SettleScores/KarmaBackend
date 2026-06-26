@@ -4,6 +4,7 @@
 
 export default {
   Base: "/api",
+  Docs: "/api-docs",
   Users: {
     Base: "/users",
     Get: "/all",

@@ -30,11 +30,14 @@ async function getAllRoles(_: IReq, response: IRes) {
 }
 
 async function getAllUsers(_: IReq, response: IRes) {
-  const users = await User.findAll({ include: [{ model: TaskStatus, as: 'tasks' }] });
+  const users = await User.findAll({
+    attributes: { exclude: ['password'] },
+    include: [{ model: TaskStatus, as: 'tasks' }],
+  });
 
   const resultArray = {
     data: users,
-    cunt: users.length,
+    count: users.length,
   };
 
   response.status(HttpStatusCodes.OK).json(resultArray);
